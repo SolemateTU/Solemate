@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -19,16 +18,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+
 import org.json.JSONObject;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
+import java.io.UnsupportedEncodingException;
+
 
 /**
  * Created by xxnoa_000 on 2/28/2018.
@@ -64,7 +59,7 @@ public class Details extends Activity {
             // listener for RecognitionCallButton
             recognitionCallButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    // Request a string response from the provided URL using Volley library
+                    // Create request to sent to AWS
                     // Volley docs: https://developer.android.com/training/volley/request.html
                     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                             (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -76,23 +71,18 @@ public class Details extends Activity {
                             }, new Response.ErrorListener() {
                                 @Override
                                 public void onErrorResponse(VolleyError error) {
-                                    // TODO: Handle error
-                                    System.out.println(error.networkResponse.headers);
-                                    sneakerIDTextView.setText("That didn't work!");
-
+                                    // The message was sent in the error response
+                                    try {
+                                        // convert response byte array to string
+                                        String str = new String(error.networkResponse.data, "UTF-8");
+                                        sneakerIDTextView.setText(str);
+                                    } catch (UnsupportedEncodingException e) {
+                                        e.printStackTrace();
+                                        sneakerIDTextView.setText("Recommendation Failed :(");
+                                    }
                                 }
-                            }){
-                        @Override
-                        public Map<String, String> getHeaders() throws AuthFailureError {
-                            Map<String, String>  params = new HashMap<String, String>();
-                            params.put("Host", "apigateway.us-east-1.amazonaws.com");
-                            params.put("x-amz-date", getISO8601StringForCurrentDate());
-                            params.put("Authorization", "");
-
-
-                            return params;
-                        }
-                    };
+                            });
+                    // make request by adding request to request queue
                     queue.add(jsonObjectRequest);
                 }
             });
@@ -110,16 +100,5 @@ public class Details extends Activity {
 
 
         // }
-    }
-    // date utils found here https://gist.github.com/kristopherjohnson/6124652
-    public String getISO8601StringForCurrentDate() {
-        Date now = new Date();
-        return getISO8601StringForDate(now);
-    }
-
-    private String getISO8601StringForDate(Date date) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return dateFormat.format(date);
     }
 }
