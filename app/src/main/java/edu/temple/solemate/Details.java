@@ -11,11 +11,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 
@@ -23,6 +25,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -48,33 +52,27 @@ public class Details extends Activity {
         final RequestQueue queue = Volley.newRequestQueue(this);
         final String url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/Recommend_Function/";
 
+        // httpMethod: "POST"
+        // body: "sample body"
+
         // listener for RecognitionCallButton
         recognitionCallButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Create request to sent to AWS
-                // Volley docs: https://developer.android.com/training/volley/request.html
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                        (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
+                // Request a string response from the provided URL.
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                        new Response.Listener<String>() {
                             @Override
-                            public void onResponse(JSONObject response) {
-                                sneakerIDTextView.setText("Response: " + response.toString());
+                            public void onResponse(String response) {
+                                // Display the first 500 characters of the response string.
+                                sneakerIDTextView.setText(response);
                             }
                         }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                // The message was sent in the error response
-                                try {
-                                    // convert response byte array to string
-                                    String str = new String(error.networkResponse.data, "UTF-8");
-                                    sneakerIDTextView.setText(str);
-                                } catch (UnsupportedEncodingException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                // make request by adding request to request queue
-                queue.add(jsonObjectRequest);
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        sneakerIDTextView.setText("That didn't work!");
+                    }
+                });
+                queue.add(stringRequest);
             }
         });
 
