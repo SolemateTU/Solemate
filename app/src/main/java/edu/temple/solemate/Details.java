@@ -30,114 +30,59 @@ import java.io.File;
 public class Details extends Activity {
 
     private ImageView image;
-    private Button recognitionCallButton;
-    private TextView sneakerIDTextView;
-
-
     private TextView header;
     private TextView dets;
 
-    private String r;
-
     protected void onCreate (Bundle savedInstanceState){
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.savetemp);
 
         image = (ImageView) findViewById(R.id.imageView3);
-        recognitionCallButton = (Button) findViewById(R.id.AWSRecogCallButton);
-        sneakerIDTextView = (TextView) findViewById(R.id.sneakerIDTextView);
 
-        final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(this);
         // Instantiate the RequestQueue.
         final RequestQueue queue = Volley.newRequestQueue(this);
         final String url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/Recommend_Function/";
 
-
-        final View sheetView = this.getLayoutInflater().inflate(R.layout.pop_up_send, null);
-        mBottomSheetDialog.setContentView(sheetView);
-
-        // httpMethod: "POST"
-        // body: "sample body"
-
-        // listener for RecognitionCallButton
-
-        dets= (TextView) sheetView.findViewById(R.id.details);
-
-
+        // build request
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        sneakerIDTextView.setText(response);
                         dets.setText(response);
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                sneakerIDTextView.setText("That didn't work!");
             }
         });
+        // make request
         queue.add(stringRequest);
-
-        System.out.println(r);
-
-        recognitionCallButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Request a string response from the provided URL.
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                // Display the first 500 characters of the response string.
-                                sneakerIDTextView.setText(response);
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        sneakerIDTextView.setText("That didn't work!");
-                    }
-                });
-                queue.add(stringRequest);
-            }
-        });
 
         //picture taken
         if(!getIntent().getExtras().getBoolean("boolean")){
-        File imgFile = (File) getIntent().getExtras().get("picture");
-
+            File imgFile = (File) getIntent().getExtras().get("picture");
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
             image.setImageBitmap(myBitmap);
             image.setRotation(90);
-
-            //INSERT CODE FOR AWS ENDPOINT HERE
-
         }
-
         //picture from internal storage
-        else{
-
+        else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-
             Bitmap myBitmap = BitmapFactory.decodeFile((String) getIntent().getExtras().get("picture2"));
 
-
             image.setImageBitmap(myBitmap);
-
-
-
-
         }
 
+        // construct pop-up
+        final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(this);
+        final View sheetView = this.getLayoutInflater().inflate(R.layout.pop_up_send, null);
+        mBottomSheetDialog.setContentView(sheetView);
+        dets = (TextView) sheetView.findViewById(R.id.details);
 
-
-        header= (TextView) sheetView.findViewById(R.id.header);
+        // label pop-up
+        header = (TextView) sheetView.findViewById(R.id.header);
         header.setText("Yeezy Powerphase");
-
-
-
 
         mBottomSheetDialog.show();
         LinearLayout cancel = (LinearLayout) sheetView.findViewById(R.id.fragment_history_bottom_sheet_delete);
@@ -148,6 +93,5 @@ public class Details extends Activity {
                 mBottomSheetDialog.cancel();
             }
         });
-        // }
     }
 }
