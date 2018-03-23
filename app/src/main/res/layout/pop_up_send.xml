@@ -43,6 +43,7 @@
             android:layout_weight="1"
             app:srcCompat="@drawable/powerphases" />
         <TextView
+            android:id="@+id/details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"

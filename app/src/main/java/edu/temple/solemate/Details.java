@@ -9,28 +9,18 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.Button;
-import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-
-import org.json.JSONObject;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
@@ -45,6 +35,9 @@ public class Details extends Activity {
 
 
     private TextView header;
+    private TextView dets;
+
+    private String r;
 
     protected void onCreate (Bundle savedInstanceState){
 
@@ -60,10 +53,36 @@ public class Details extends Activity {
         final RequestQueue queue = Volley.newRequestQueue(this);
         final String url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/Recommend_Function/";
 
+
+        final View sheetView = this.getLayoutInflater().inflate(R.layout.pop_up_send, null);
+        mBottomSheetDialog.setContentView(sheetView);
+
         // httpMethod: "POST"
         // body: "sample body"
 
         // listener for RecognitionCallButton
+
+        dets= (TextView) sheetView.findViewById(R.id.details);
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        sneakerIDTextView.setText(response);
+                        dets.setText(response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                sneakerIDTextView.setText("That didn't work!");
+            }
+        });
+        queue.add(stringRequest);
+
+        System.out.println(r);
+
         recognitionCallButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Request a string response from the provided URL.
@@ -95,23 +114,6 @@ public class Details extends Activity {
 
             //INSERT CODE FOR AWS ENDPOINT HERE
 
-            final View sheetView = this.getLayoutInflater().inflate(R.layout.pop_up_send, null);
-            mBottomSheetDialog.setContentView(sheetView);
-
-            header= (TextView) sheetView.findViewById(R.id.header);
-            header.setText("Yeezy Powerphase");
-
-
-            mBottomSheetDialog.show();
-            LinearLayout cancel = (LinearLayout) sheetView.findViewById(R.id.fragment_history_bottom_sheet_delete);
-            cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Cancel code here;
-                    mBottomSheetDialog.cancel();
-                }
-            });
-
         }
 
         //picture from internal storage
@@ -126,23 +128,26 @@ public class Details extends Activity {
 
 
 
-            final View sheetView = this.getLayoutInflater().inflate(R.layout.pop_up_send, null);
-            mBottomSheetDialog.setContentView(sheetView);
-
-            header= (TextView) sheetView.findViewById(R.id.header);
-            header.setText("Yeezy Powerphase");
-
-            mBottomSheetDialog.show();
-            LinearLayout cancel = (LinearLayout) sheetView.findViewById(R.id.fragment_history_bottom_sheet_delete);
-            cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Cancel code here;
-                    mBottomSheetDialog.cancel();
-                }
-            });
 
         }
+
+
+
+        header= (TextView) sheetView.findViewById(R.id.header);
+        header.setText("Yeezy Powerphase");
+
+
+
+
+        mBottomSheetDialog.show();
+        LinearLayout cancel = (LinearLayout) sheetView.findViewById(R.id.fragment_history_bottom_sheet_delete);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Cancel code here;
+                mBottomSheetDialog.cancel();
+            }
+        });
         // }
     }
 }
