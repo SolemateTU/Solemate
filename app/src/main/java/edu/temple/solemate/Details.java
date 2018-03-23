@@ -71,7 +71,6 @@ public class Details extends Activity {
 
             Bitmap myBitmap = BitmapFactory.decodeFile((String)getIntent().getExtras().get("picture2"));
 
-            System.out.println("Branch test");
 
             image.setImageBitmap(myBitmap);
 
