@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,6 +40,7 @@ public class Details extends Activity {
 
         // Instantiate the RequestQueue.
         final RequestQueue queue = Volley.newRequestQueue(this);
+        // API Gateway endpoint URL
         final String url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/Recommend_Function/";
 
         // build request
@@ -55,19 +55,18 @@ public class Details extends Activity {
             public void onErrorResponse(VolleyError error) {
             }
         });
-        // make request
+        // make request to AWS
         queue.add(stringRequest);
 
-        //picture taken
-        if(!getIntent().getExtras().getBoolean("boolean")){
+        // display image in image view and perform any necessary formatting
+        if(!getIntent().getExtras().getBoolean("boolean")){ // picture taken
             File imgFile = (File) getIntent().getExtras().get("picture");
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
             image.setImageBitmap(myBitmap);
             image.setRotation(90);
         }
-        //picture from internal storage
-        else {
+        else { //picture from internal storage
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
             Bitmap myBitmap = BitmapFactory.decodeFile((String) getIntent().getExtras().get("picture2"));
 
@@ -84,6 +83,7 @@ public class Details extends Activity {
         header = (TextView) sheetView.findViewById(R.id.header);
         header.setText("Yeezy Powerphase");
 
+        // display pop-up
         mBottomSheetDialog.show();
         LinearLayout cancel = (LinearLayout) sheetView.findViewById(R.id.fragment_history_bottom_sheet_delete);
         cancel.setOnClickListener(new View.OnClickListener() {
