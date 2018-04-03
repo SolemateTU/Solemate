@@ -2,6 +2,7 @@ package edu.temple.solemate;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -51,7 +52,7 @@ public class Details extends Activity {
         final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(this);
         // Instantiate the RequestQueue.
         final RequestQueue queue = Volley.newRequestQueue(this);
-        final String url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/Recommend_Function/";
+        final String url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/identification-function";
 
 
         final View sheetView = this.getLayoutInflater().inflate(R.layout.pop_up_send, null);
@@ -65,13 +66,14 @@ public class Details extends Activity {
         dets= (TextView) sheetView.findViewById(R.id.details);
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         // Display the first 500 characters of the response string.
                         sneakerIDTextView.setText(response);
                         dets.setText(response);
+                        System.out.println(response);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -125,6 +127,7 @@ public class Details extends Activity {
 
 
             image.setImageBitmap(myBitmap);
+            image.setRotation(90);
 
 
 
@@ -146,6 +149,14 @@ public class Details extends Activity {
             public void onClick(View v) {
                 // Cancel code here;
                 mBottomSheetDialog.cancel();
+            }
+        });
+        LinearLayout description = (LinearLayout) sheetView.findViewById(R.id.fragment_history_bottom_sheet_edit);
+        description.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // go to description;
+                startActivity(new Intent(Details.this, Description.class));
             }
         });
         // }

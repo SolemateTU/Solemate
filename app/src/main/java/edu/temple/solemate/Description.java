@@ -5,15 +5,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * Created by xxnoa_000 on 2/28/2018.
+ * Created by xxnoa_000 on 4/1/2018.
  */
 
-public class SavedList extends Activity {
+public class Description extends Activity {
 
+    private TextView t;
+    private ImageView i;
+
+    // for suggestion list fake data
     ListView list;
     String[] web = {
             "Nike",
@@ -43,15 +49,22 @@ public class SavedList extends Activity {
             R.drawable.powerphases
 
     };
+    ////////////////////////
 
 
     protected void onCreate (Bundle savedInstanceState){
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.s_list);
+        setContentView(R.layout.desc);
+        t = (TextView) findViewById(R.id.tv);
+        i = (ImageView) findViewById(R.id.image);
 
+        i.setImageResource(R.drawable.powerphases);
+        t.setText("grab saved data for details here");
+
+
+        // code for suggestion list
         CustomList adapter = new
-                CustomList(SavedList.this, web, weeb, imageId);
+                CustomList(Description.this, web, weeb, imageId);
         list=(ListView)findViewById(R.id.list);
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -59,11 +72,13 @@ public class SavedList extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Toast.makeText(SavedList.this, "You Clicked at " +web[+ position], Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(SavedList.this, Description.class));
+                Toast.makeText(Description.this, "You Clicked at " +web[+ position], Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(Description.this, Description.class));
 
             }
         });
+
+
 
     }
 }
