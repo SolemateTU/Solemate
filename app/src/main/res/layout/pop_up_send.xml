@@ -37,8 +37,10 @@
         android:orientation="horizontal"
         android:foreground="?android:attr/selectableItemBackground"
         android:padding="16dp">
+
         <android.support.v7.widget.AppCompatImageView
-            android:layout_width="wrap_content"
+            android:id="@+id/detail_image"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             app:srcCompat="@drawable/powerphases" />
