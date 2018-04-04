@@ -38,13 +38,12 @@ public class Details extends Activity {
     private TextView header;
     private TextView dets;
 
-    private String r;
-
     protected void onCreate (Bundle savedInstanceState){
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.savetemp);
 
+        //initiating view objects
         image = (ImageView) findViewById(R.id.imageView3);
         recognitionCallButton = (Button) findViewById(R.id.AWSRecogCallButton);
         sneakerIDTextView = (TextView) findViewById(R.id.sneakerIDTextView);
@@ -66,6 +65,7 @@ public class Details extends Activity {
         dets= (TextView) sheetView.findViewById(R.id.details);
 
 
+        //place to do post call, and save response
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
@@ -82,8 +82,7 @@ public class Details extends Activity {
             }
         });
         queue.add(stringRequest);
-
-        System.out.println(r);
+        ///////////////
 
         recognitionCallButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -114,7 +113,6 @@ public class Details extends Activity {
             image.setImageBitmap(myBitmap);
             image.setRotation(90);
 
-            //INSERT CODE FOR AWS ENDPOINT HERE
 
         }
 
@@ -136,6 +134,7 @@ public class Details extends Activity {
 
 
 
+        //sample header, can use this code to place in current data for this single instance
         header= (TextView) sheetView.findViewById(R.id.header);
         header.setText("Yeezy Powerphase");
 
@@ -159,6 +158,5 @@ public class Details extends Activity {
                 startActivity(new Intent(Details.this, Description.class));
             }
         });
-        // }
     }
 }
