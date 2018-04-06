@@ -101,6 +101,26 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        //making folder for saving shoe data
+        File mFolder = new File("/data/user/0/edu.temple.solemate/files");
+        File imgFile = new File(mFolder.getAbsolutePath() + "/config.txt");
+        if (!mFolder.exists()) {
+            mFolder.mkdir();
+        }
+        if (!imgFile.exists()) {
+            try {
+                //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                imgFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
         mCameraView = (CameraView) findViewById(R.id.camera);
         if (mCameraView != null) {
             mCameraView.addCallback(mCallback);
