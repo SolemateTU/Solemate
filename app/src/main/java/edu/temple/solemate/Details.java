@@ -73,8 +73,6 @@ public class Details extends Activity {
 
         //initiating view objects
         image = (ImageView) findViewById(R.id.imageView3);
-        recognitionCallButton = (Button) findViewById(R.id.AWSRecogCallButton);
-        sneakerIDTextView = (TextView) findViewById(R.id.sneakerIDTextView);
 
         //final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(this);
         // Instantiate the RequestQueue.
@@ -84,59 +82,6 @@ public class Details extends Activity {
 
 
         final Intent intent= new Intent(Details.this, Description.class);
-        //final View sheetView = this.getLayoutInflater().inflate(R.layout.pop_up_send, null);
-        //mBottomSheetDialog.setContentView(sheetView);
-
-        // httpMethod: "POST"
-        // body: "sample body"
-
-        // listener for RecognitionCallButton
-
-        //dets= (TextView) sheetView.findViewById(R.id.details);
-
-
-        //place to do post call, and save response
-
-        /*
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        sneakerIDTextView.setText(response);
-                        dets.setText(response);
-                        System.out.println(response);
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                sneakerIDTextView.setText("That didn't work!");
-            }
-        });
-        queue.add(stringRequest);*/
-
-
-        ///////////////
-
-        /*recognitionCallButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Request a string response from the provided URL.
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                // Display the first 500 characters of the response string.
-                                sneakerIDTextView.setText(response);
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        sneakerIDTextView.setText("That didn't work!");
-                    }
-                });
-                queue.add(stringRequest);
-            }
-        });*/
 
         //picture taken
         if(!getIntent().getExtras().getBoolean("boolean")){
