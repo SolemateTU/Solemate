@@ -12,11 +12,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
@@ -108,34 +109,30 @@ public class PullList extends Activity {
                 R.drawable.powerphases
 
         };
-        ////////////////////////
 
-        /*JSONObject postparams=new JSONObject();
+        // build json object
+        JSONObject postparams = new JSONObject();
         try {
-            //postparams.put("img", imageString);
             postparams.put("userID", "charlie");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        Array l;*/
-
-
-
-        // The request
-        StringRequest postRequest = new StringRequest(Request.Method.POST, id_url,
-                new Response.Listener<String>() {
+        // JSONArray request
+        JsonObjectRequest postRequest = new JsonObjectRequest
+                (Request.Method.POST, id_url, postparams, new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject jsonResponse = new JSONObject(response);
-                            //need to get something out of this
-                            System.out.println(response);
-                            ///////////////////////////////////
-                            mBottomSheetDialog.cancel();
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                    public void onResponse(JSONObject response) {
+                        // heres an example of iterating over each image and printing the contents
+                        // create array of image labels
+                        JSONArray keys = response.names();
+                        for(int i = 0; i<keys.length(); i++) {
+                            try {
+                                // print individual image string
+                                System.out.println(response.get(keys.getString(i)));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 },
@@ -146,14 +143,7 @@ public class PullList extends Activity {
                     }
                 }
         ) {
-            // here is params will add to your url using post method
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("userID", "charlie");
-                //params.put("2ndParamName","valueoF2ndParam");
-                return params;
-            }
+
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
@@ -161,58 +151,15 @@ public class PullList extends Activity {
                 return headers;
             }
         };
-        //Volley.newRequestQueue(this).add(postRequest);
-        System.out.println("The Request: "+postRequest);
+
+        // prevent request timeout
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                5000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        // make request
         queue.add(postRequest);
-
-
-        //queue.add(sr);
-
-
-
-
-
-
-       /* // Initialize a new RequestQueue instance
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-
-        // Initialize a new JsonArrayRequest instance
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
-                Request.Method.POST,
-                id_url,
-                null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        // Do something with response
-                        //mTextView.setText(response.toString());
-
-                        jarray=response;
-                        System.out.println(response.toString());
-                        // Process the JSON
-
-                    }
-                },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error){
-                        // Do something when error occurred
-
-                    }
-                }
-        );
-
-        // Add JsonArrayRequest to the RequestQueue
-        requestQueue.add(jsonArrayRequest);*/
-
-
-
-
-
-
-
-
-
 
         System.out.println("MADE IT HERE 1");
         //queue.add(jsonObjReq);
