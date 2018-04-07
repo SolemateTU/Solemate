@@ -25,7 +25,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -111,7 +110,7 @@ public class PullList extends Activity {
         };
         ////////////////////////
 
-        JSONObject postparams=new JSONObject();
+        /*JSONObject postparams=new JSONObject();
         try {
             //postparams.put("img", imageString);
             postparams.put("userID", "charlie");
@@ -119,10 +118,11 @@ public class PullList extends Activity {
             e.printStackTrace();
         }
 
-        Array l;
+        Array l;*/
 
 
 
+        // The request
         StringRequest postRequest = new StringRequest(Request.Method.POST, id_url,
                 new Response.Listener<String>() {
                     @Override
