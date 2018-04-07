@@ -51,7 +51,7 @@
             android:textStyle="bold"
             android:layout_gravity="center"
             android:layout_marginLeft="0dp"
-            android:text="See Details"/>
+            android:text=""/>
     </LinearLayout>
 
     <LinearLayout

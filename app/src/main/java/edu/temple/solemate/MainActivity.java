@@ -204,7 +204,22 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+
         switch (item.getItemId()) {
+            case R.id.pull_button:
+                /*FragmentManager fragmentManager = getSupportFragmentManager();
+                if (mCameraView != null
+                        && fragmentManager.findFragmentByTag(FRAGMENT_DIALOG) == null) {
+                    final Set<AspectRatio> ratios = mCameraView.getSupportedAspectRatios();
+                    final AspectRatio currentRatio = mCameraView.getAspectRatio();
+                    AspectRatioFragment.newInstance(ratios, currentRatio)
+                            .show(fragmentManager, FRAGMENT_DIALOG);
+                }*/
+                startActivity(new Intent(MainActivity.this, PullList.class));
+
+
+                return true;
             case R.id.list_button:
                 /*FragmentManager fragmentManager = getSupportFragmentManager();
                 if (mCameraView != null

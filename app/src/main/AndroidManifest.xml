@@ -31,6 +31,9 @@
         <activity android:name=".Description">
 
         </activity>
+        <activity android:name=".PullList">
+
+        </activity>
     </application>
 
 </manifest>

@@ -233,6 +233,8 @@ public class Details extends Activity {
             }
         });//}
 
+        System.out.println("The Request 2: "+jsonObjReq);
+
         queue.add(jsonObjReq);
         System.out.println("Title: "+Name[0]);
         System.out.println("Description: "+Details[0]);
