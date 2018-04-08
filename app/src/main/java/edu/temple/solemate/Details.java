@@ -10,8 +10,8 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.util.Base64;
 import android.util.Log;
+
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -54,12 +54,18 @@ public class Details extends Activity {
     private TextView dets;
     private TextView shoeTitle;
 
+    // urls
+    final String url = "https://s7.postimg.org/lavivuo23/Solemate.gif";
+    final String details_url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/identification-function";
+    final String identification_url = "https://1hoad2m4ka.execute-api.us-east-1.amazonaws.com/dev2";
+
+    private RequestQueue queue;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.savetemp);
 
         Bitmap myBitmap = null;
-
 
         final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(this);
         final View sheetView = this.getLayoutInflater().inflate(R.layout.pop_up_send, null);
@@ -71,12 +77,8 @@ public class Details extends Activity {
         dets_img = (ImageView) sheetView.findViewById(R.id.detail_image);
         shoeTitle = (TextView) sheetView.findViewById(R.id.header);
 
-        // urls
-        final String url = "https://s7.postimg.org/lavivuo23/Solemate.gif";
-        final String details_url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/identification-function";
-
         // Instantiate the RequestQueue.
-        final RequestQueue queue = Volley.newRequestQueue(this);
+        queue = Volley.newRequestQueue(this);
 
         final Intent intent = new Intent(Details.this, Description.class);
         final boolean[] gtg = {false};
@@ -85,7 +87,7 @@ public class Details extends Activity {
         myBitmap = display_image(myBitmap);
         String imageString = bitmapToBase64(myBitmap);
 
-        // build details request
+        // build request body
         JSONObject postParams = new JSONObject();
         try {
             postParams.put("img", imageString);
@@ -93,12 +95,14 @@ public class Details extends Activity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        JsonObjectRequest detailsRequest = buildDetailsRequest(intent, gtg, postParams, details_url);
+
+        // build identification model request
+        JsonObjectRequest identificationRequest = buildIdentificationRequest(intent, gtg, postParams, imageString);
 
         // sample header for pop-up view
         // can use this code to place in current data for this single instance
         shoeTitle.setText("Loading");
-        GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget((ImageView) sheetView.findViewById(R.id.detail_image));
+        GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(dets_img);
         Glide.with(this).load(url).into(imageViewTarget);
 
         // register cancel and display callbacks
@@ -127,8 +131,9 @@ public class Details extends Activity {
         // display details pop-up
         mBottomSheetDialog.show();
 
-        // make details request
-        queue.add(detailsRequest);
+        // make ID request
+        System.out.println("+++++MAKING ID REQUEST+++++");
+        queue.add(identificationRequest);
     }
 
     private Bitmap display_image(Bitmap myBitmap) {
@@ -171,17 +176,52 @@ public class Details extends Activity {
         return decodedByte;
     }
 
-    private JsonObjectRequest buildDetailsRequest(final Intent intent, final boolean[] gtg, JSONObject postParams, String details_url) {
+    private JsonObjectRequest buildIdentificationRequest(final Intent intent, final boolean[] gtg, final JSONObject postParams, final String imageString){
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, identification_url, postParams,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        System.out.println("++++++++++++ID REQUEST RETURN++++++++++++");
+                        // will set shoeTitle to found ID
+                        shoeTitle.setText("FOUND SHOE");
+                        // build and make request to get shoe details
+                        JsonObjectRequest detailsRequest = buildDetailsRequest(intent, gtg, postParams);
+                        // make details request
+                        queue.add(detailsRequest);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println("++++++++++++ID REQUEST FAIL++++++++++++");
+                        System.out.println(error.getMessage());
+                        //Failure Callback
+                    }
+                }) {
+
+            /** Passing some request headers* */
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        return jsonObjReq;
+    }
+
+    private JsonObjectRequest buildDetailsRequest(final Intent intent, final boolean[] gtg, JSONObject postParams) {
         final String[] tosave = new String[1];
         final String[] Name = new String[1];
         final String[] Details = new String[1];
         final String[] Price = new String[1];
 
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                details_url, postParams,
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, details_url, postParams,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        System.out.println("++++++++++++REC REQUEST RETURN++++++++++++");
                         try {
                             // write response to phone storage
                             JSONArray jarray;
@@ -224,6 +264,7 @@ public class Details extends Activity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        System.out.println("++++++++++++REC REQUEST FAIL++++++++++++");
                         //Failure Callback
                     }
                 }) {
