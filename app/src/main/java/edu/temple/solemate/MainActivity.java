@@ -246,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements
                 Intent i = new Intent(
                         Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                i.putExtra("boolean2", false);
 
                 startActivityForResult(i, PICK_IMAGE);
 
@@ -287,6 +288,7 @@ public class MainActivity extends AppCompatActivity implements
             Intent intent = new Intent(MainActivity.this, Details.class);
             intent.putExtra("picture2", picturePath);
             intent.putExtra("boolean", true);
+            intent.putExtra("boolean2", false);
             startActivity(intent);
         }
     }

@@ -87,10 +87,13 @@ public class Details extends Activity {
         if(!getIntent().getExtras().getBoolean("boolean")){
         File imgFile = (File) getIntent().getExtras().get("picture");
 
+
+
             myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
             image.setImageBitmap(myBitmap);
             image.setRotation(90);
+
 
 
         }
@@ -98,10 +101,15 @@ public class Details extends Activity {
         //picture from internal storage
         else{
 
+            if((boolean) getIntent().getExtras().get("boolean2")){
+                byte[] decodedString = Base64.decode((String) getIntent().getExtras().get("picture2"), Base64.DEFAULT);
+                myBitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                image.setImageBitmap(myBitmap);
+            }
+            else{
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
             myBitmap = BitmapFactory.decodeFile((String) getIntent().getExtras().get("picture2"));
-
-            image.setImageBitmap(myBitmap);
+            image.setImageBitmap(myBitmap);}
 
         }
 

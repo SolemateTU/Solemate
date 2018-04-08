@@ -47,6 +47,7 @@ public class PullList extends Activity {
 
 
     JSONArray jarray;
+    JSONObject r;
     ListView list;
 
 
@@ -55,6 +56,7 @@ public class PullList extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.p_list);
         jarray = new JSONArray();
+        r= new JSONObject();
 
         final RequestQueue queue = Volley.newRequestQueue(this);
         final String id_url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/get-user-images";
@@ -126,6 +128,8 @@ public class PullList extends Activity {
                         // heres an example of iterating over each image and printing the contents
                         // create array of image labels
                         JSONArray keys = response.names();
+                        jarray= response.names();
+                        r=response;
                         for(int i = 0; i<keys.length(); i++) {
                             try {
                                 // print individual image string
@@ -134,6 +138,37 @@ public class PullList extends Activity {
                                 e.printStackTrace();
                             }
                         }
+                        for(int i = 0; i<jarray.length(); i++) {
+                            try {
+                                names.add((String) r.get(jarray.getString(i)));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+
+                        System.out.println("Size of Names now: "+names.size());
+                        CustomList2 adapter = new
+                                CustomList2(PullList.this, names);
+                        list=(ListView)findViewById(R.id.list);
+                        list.setAdapter(adapter);
+                        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view,
+                                                    int position, long id) {
+                                //Toast.makeText(SavedList.this, "You Clicked at " +web[+ position], Toast.LENGTH_SHORT).show();
+                                Intent intent= new Intent(PullList.this, Details.class);
+                                intent.putExtra("picture2", names.get(position));
+
+                                intent.putExtra("boolean", true);
+                                intent.putExtra("boolean2", true);
+                                System.out.println("Picture: "+names.get(position));
+                                startActivity(intent);
+
+                            }
+                        });
+                        mBottomSheetDialog.cancel();
                     }
                 },
                 new Response.ErrorListener() {
@@ -203,28 +238,10 @@ public class PullList extends Activity {
 
 
 
+        // make names array here
 
 
 
-        CustomList2 adapter = new
-                CustomList2(PullList.this, names);
-        list=(ListView)findViewById(R.id.list);
-        list.setAdapter(adapter);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                //Toast.makeText(SavedList.this, "You Clicked at " +web[+ position], Toast.LENGTH_SHORT).show();
-                Intent intent= new Intent(PullList.this, Details.class);
-                intent.putExtra("picture2", images.get(position));
-
-                intent.putExtra("boolean", true);
-                System.out.println("Picture: "+images.get(position));
-                startActivity(intent);
-
-            }
-        });
 
     }
 
