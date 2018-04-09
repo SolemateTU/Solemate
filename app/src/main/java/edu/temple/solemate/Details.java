@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -201,7 +202,7 @@ public class Details extends Activity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         System.out.println("++++++++++++ID REQUEST FAIL++++++++++++");
-                        System.out.println(error.getMessage());
+                        System.out.println(error);
                         shoeTitle.setText("Could not identify image");
                         //Failure Callback
                     }
@@ -215,6 +216,11 @@ public class Details extends Activity {
                 return headers;
             }
         };
+
+        jsonObjReq.setRetryPolicy(new DefaultRetryPolicy(
+                50000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         return jsonObjReq;
     }
@@ -287,6 +293,10 @@ public class Details extends Activity {
                 return headers;
             }
         };
+        jsonObjReq.setRetryPolicy(new DefaultRetryPolicy(
+                50000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         return jsonObjReq;
     }
