@@ -202,6 +202,7 @@ public class Details extends Activity {
                     public void onErrorResponse(VolleyError error) {
                         System.out.println("++++++++++++ID REQUEST FAIL++++++++++++");
                         System.out.println(error.getMessage());
+                        shoeTitle.setText("Could not identify image");
                         //Failure Callback
                     }
                 }) {
