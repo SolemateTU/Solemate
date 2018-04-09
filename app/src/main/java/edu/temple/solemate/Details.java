@@ -182,8 +182,15 @@ public class Details extends Activity {
                     @Override
                     public void onResponse(JSONObject response) {
                         System.out.println("++++++++++++ID REQUEST RETURN++++++++++++");
-                        // will set shoeTitle to found ID
-                        shoeTitle.setText("FOUND SHOE");
+                        try {
+                            String shoeID = response.getString("shoeID").replace("_Stock","");
+                            shoeID = shoeID.replace("_stock", "");
+                            System.out.println(shoeID);
+                            //shoeTitle.setText(shoeID.replace("_", " "));
+                            postParams.put("shoeID", shoeID);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         // build and make request to get shoe details
                         JsonObjectRequest detailsRequest = buildDetailsRequest(intent, gtg, postParams);
                         // make details request
@@ -233,6 +240,9 @@ public class Details extends Activity {
                             }
                             jarray.put(response);
                             writeToFile(jarray.toString());
+
+                            System.out.println("+++++++++FDHFJDKSHF+++++++++");
+                            System.out.println(response.toString());
 
                             // display details in pop up
                             shoeTitle.setText(response.getString("shoeTitle"));
