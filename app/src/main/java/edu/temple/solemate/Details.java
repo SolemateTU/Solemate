@@ -58,7 +58,7 @@ public class Details extends Activity {
     // urls
     final String url = "https://s7.postimg.org/lavivuo23/Solemate.gif";
     final String details_url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/identification-function";
-    final String identification_url = "https://1hoad2m4ka.execute-api.us-east-1.amazonaws.com/dev2";
+    final String identification_url = "http://eb-flask.xuzpjp4dih.us-east-1.elasticbeanstalk.com";
 
     private RequestQueue queue;
 
@@ -187,7 +187,7 @@ public class Details extends Activity {
                             String shoeID = response.getString("shoeID").replace("_Stock","");
                             shoeID = shoeID.replace("_stock", "");
                             System.out.println(shoeID);
-                            //shoeTitle.setText(shoeID.replace("_", " "));
+                            shoeTitle.setText(shoeID.replace("_", " "));
                             postParams.put("shoeID", shoeID);
                         } catch (JSONException e) {
                             e.printStackTrace();
