@@ -34,6 +34,8 @@ import android.widget.Toast;
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.CameraView;
 
+import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -58,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
+
+    private TensorFlowInferenceInterface inferenceInterface;
 
 
     private static final int[] FLASH_OPTIONS = {

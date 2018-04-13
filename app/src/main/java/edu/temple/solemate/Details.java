@@ -56,7 +56,7 @@ public class Details extends Activity {
     private TextView shoeTitle;
 
     // urls
-    final String url = "https://s7.postimg.org/lavivuo23/Solemate.gif";
+    final String url = "https://s17.postimg.cc/w2zg7k1u7/Solemate.gif";
     final String details_url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/identification-function";
     final String identification_url = "https://1hoad2m4ka.execute-api.us-east-1.amazonaws.com/dev2";
 
