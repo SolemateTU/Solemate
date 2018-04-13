@@ -59,7 +59,7 @@ public class Details extends Activity {
     private TextView shoeTitle;
 
     // urls
-    final String url = "https://s7.postimg.org/lavivuo23/Solemate.gif";
+    final String url = "https://s17.postimg.cc/w2zg7k1u7/Solemate.gif";
     final String details_url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/identification-function";
     final String identification_url = "http://eb-flask.xuzpjp4dih.us-east-1.elasticbeanstalk.com";
 
@@ -168,13 +168,9 @@ public class Details extends Activity {
         int w = myBitmap.getWidth();
         int h = myBitmap.getHeight();
 
-        int limitingDim;
+        // minimum of width and height
+        int limitingDim = Math.min(w, h);
 
-        if (w<h) {
-            limitingDim = w;
-        } else {
-            limitingDim = h;
-        }
         System.out.println(w);
         System.out.println(h);
         System.out.println(limitingDim);
@@ -188,7 +184,6 @@ public class Details extends Activity {
                                 (int)(w*scalingFactor),
                                 (int)(h*scalingFactor),
                                 true);
-
     }
 
     private String bitmapToBase64(Bitmap myBitmap) {
