@@ -50,6 +50,9 @@ import java.util.Map;
 
 public class Details extends Activity {
 
+    // minimum dimension for scaling image
+    private int minDimension = 300;
+
     private ImageView image;
     private ImageView dets_img;
     private TextView dets;
@@ -86,13 +89,14 @@ public class Details extends Activity {
 
         // get bitmap and encode as base64
         myBitmap = display_image(myBitmap);
-        String imageString = bitmapToBase64(myBitmap);
+        Bitmap scaledBitmap = scaleBitmap(myBitmap);
+        String imageString = bitmapToBase64(scaledBitmap);
 
         // build request body
         JSONObject postParams = new JSONObject();
         try {
             postParams.put("img", imageString);
-            postParams.put("userID", "test_id");
+            postParams.put("userID", "test");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -158,6 +162,33 @@ public class Details extends Activity {
             }
         }
         return myBitmap;
+    }
+
+    private Bitmap scaleBitmap(Bitmap myBitmap){
+        int w = myBitmap.getWidth();
+        int h = myBitmap.getHeight();
+
+        int limitingDim;
+
+        if (w<h) {
+            limitingDim = w;
+        } else {
+            limitingDim = h;
+        }
+        System.out.println(w);
+        System.out.println(h);
+        System.out.println(limitingDim);
+
+        double scalingFactor = (double)minDimension / (double)limitingDim;
+
+        System.out.println(scalingFactor);
+
+        return Bitmap.createScaledBitmap(
+                                myBitmap,
+                                (int)(w*scalingFactor),
+                                (int)(h*scalingFactor),
+                                true);
+
     }
 
     private String bitmapToBase64(Bitmap myBitmap) {
