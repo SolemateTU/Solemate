@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
@@ -12,6 +13,7 @@ import android.util.Base64;
 import android.util.Log;
 
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -55,7 +57,7 @@ public class Details extends Activity {
 
     private ImageView image;
     private ImageView dets_img;
-    private TextView dets;
+    private Button price;
     private TextView shoeTitle;
 
     // urls
@@ -77,7 +79,7 @@ public class Details extends Activity {
 
         //initiating view objects
         image = (ImageView) findViewById(R.id.imageView3);
-        dets = (TextView) sheetView.findViewById(R.id.details);
+        price = (Button) sheetView.findViewById(R.id.price);
         dets_img = (ImageView) sheetView.findViewById(R.id.detail_image);
         shoeTitle = (TextView) sheetView.findViewById(R.id.header);
 
@@ -132,6 +134,8 @@ public class Details extends Activity {
 
             }
         });
+
+
 
         // display details pop-up
         mBottomSheetDialog.show();
@@ -260,7 +264,7 @@ public class Details extends Activity {
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, details_url, postParams,
                 new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(final JSONObject response) {
                         System.out.println("++++++++++++REC REQUEST RETURN++++++++++++");
                         try {
                             // write response to phone storage
@@ -279,10 +283,28 @@ public class Details extends Activity {
 
                             // display details in pop up
                             shoeTitle.setText(response.getString("shoeTitle"));
-                            dets.setText(response.getString("shoePrice"));
+                            price.setText(response.getString("lowestPrice"));
 
                             Bitmap imageBitmap = base64ToBitmap(response.getString("shoeImage"));
                             dets_img.setImageBitmap(imageBitmap);
+
+                            price.setOnClickListener(new View.OnClickListener() {
+
+                                @Override
+                                public void onClick(View v) {
+                                    // TODO Auto-generated method stub
+                                    String url = null;
+                                    try {
+                                        url = response.getString("url");
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    Intent i = new Intent(Intent.ACTION_VIEW);
+                                    i.setData(Uri.parse(url));
+                                    startActivity(i);
+                                }
+                            });
 
                             // add details to intent
                             Name[0] = response.getString("shoeTitle");

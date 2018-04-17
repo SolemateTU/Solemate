@@ -41,7 +41,7 @@ public class PullList extends Activity {
 
 
     private TextView header;
-    private TextView dets;
+    private TextView price;
     private TextView shoeTitle;
     private ImageView dets_img;
 
@@ -201,7 +201,7 @@ public class PullList extends Activity {
         System.out.println("MADE IT HERE 2");
         final View sheetView = this.getLayoutInflater().inflate(R.layout.pop_up_send, null);
         mBottomSheetDialog.setContentView(sheetView);
-        dets = (TextView) sheetView.findViewById(R.id.details);
+        price = (TextView) sheetView.findViewById(R.id.price);
         dets_img = (ImageView) sheetView.findViewById(R.id.detail_image);
 
         //sample header, can use this code to place in current data for this single instance
