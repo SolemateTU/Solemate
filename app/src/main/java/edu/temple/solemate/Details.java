@@ -10,7 +10,6 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.util.Base64;
 import android.util.Log;
-
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -140,9 +139,12 @@ public class Details extends Activity {
     private Bitmap display_image(Bitmap myBitmap) {
         //picture taken
         if (!getIntent().getExtras().getBoolean("boolean")) {
-            File imgFile = (File) getIntent().getExtras().get("picture");
-            myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            //File imgFile = (File) getIntent().getExtras().get("picture");
+            //myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            myBitmap = BitmapFactory.decodeByteArray(
+                    getIntent().getByteArrayExtra("byteArray"),0,getIntent().getByteArrayExtra("byteArray").length);
             image.setImageBitmap(myBitmap);
+            //image.setImageBitmap(myBitmap);
             image.setRotation(90);
         }
         //picture from internal storage
