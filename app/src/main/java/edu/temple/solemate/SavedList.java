@@ -97,7 +97,7 @@ public class SavedList extends Activity {
         ////////////////////////
 
         CustomList adapter = new
-                CustomList(SavedList.this, names, desc, images, true, web, weeb, imageId);
+                CustomList(SavedList.this, names, desc, images);
         list=(ListView)findViewById(R.id.list);
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
