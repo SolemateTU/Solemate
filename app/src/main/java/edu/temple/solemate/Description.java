@@ -59,6 +59,7 @@ public class Description extends Activity {
 
     private RequestQueue queue;
 
+    final String recommendation_url = "http://eb-rec-flask-dev.us-east-1.elasticbeanstalk.com";
     final String details_url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/identification-function";
 
     protected void onCreate (Bundle savedInstanceState){
@@ -75,7 +76,6 @@ public class Description extends Activity {
         String price = getIntent().getStringExtra("price");
         String details = getIntent().getStringExtra("details");
         String img = getIntent().getStringExtra("image");
-        System.out.println("IMAGE: " + img);
 
         byte[] decodedString = Base64.decode(img, Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
@@ -83,15 +83,8 @@ public class Description extends Activity {
 
         t.setText(name + " " + details + " " + price);
 
-        // hard coded IDs for testing
-        // will need to make request to rec model and build string array from response
-        String[] ids = {"air_jordan_10", "air_jordan_3", "crocs_clogs"};
-
-        // get details for each required shoe
-        for (int i = 0; i < 3; i++){
-            JsonObjectRequest req = buildDetailsRequest(ids[i], i);
-            queue.add(req);
-        }
+        JsonObjectRequest recommendation_request = buildRecommendationRequest();
+        queue.add(recommendation_request);
 
         // set list click listener
         list = (ListView)findViewById(R.id.list);
@@ -141,6 +134,64 @@ public class Description extends Activity {
                                 CustomList(Description.this, shoeIDs, shoeDescriptions, imgStrings);
                         list=(ListView)findViewById(R.id.list);
                         list.setAdapter(adapter);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println("++++++++++++REC REQUEST FAIL++++++++++++");
+                        //Failure Callback
+                    }
+                }) {
+            /** Passing some request headers* */
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        // increase timeout limit
+        jsonObjReq.setRetryPolicy(new DefaultRetryPolicy(
+                50000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        return jsonObjReq;
+    }
+
+    private JsonObjectRequest buildRecommendationRequest() {
+        // add shoeID to json request body
+        JSONObject postParams = new JSONObject();
+        try {
+            postParams.put("img", getIntent().getStringExtra("image"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, recommendation_url, postParams,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(final JSONObject response) {
+                        // build list with returned shoe IDs
+                        String[] ids = new String[3];
+                        try {
+                            ids[0] = response.getString("shoeID-1").replace("_stock","").toLowerCase();
+                            ids[1] = response.getString("shoeID-2").replace("_stock","").toLowerCase();
+                            ids[2] = response.getString("shoeID-3").replace("_stock","").toLowerCase();
+                            System.out.println(ids[0]);
+                            System.out.println(ids[1]);
+                            System.out.println(ids[2]);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        // get details for each required shoe from AWS
+                        for (int i = 0; i < 3; i++){
+                            JsonObjectRequest req = buildDetailsRequest(ids[i], i);
+                            queue.add(req);
+                        }
                     }
                 },
                 new Response.ErrorListener() {
