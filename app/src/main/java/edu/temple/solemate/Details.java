@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -267,19 +268,20 @@ public class Details extends Activity {
                     public void onResponse(final JSONObject response) {
                         System.out.println("++++++++++++REC REQUEST RETURN++++++++++++");
                         try {
-                            // write response to phone storage
-                            JSONArray jarray;
-                            if (readFromFile().equals("")) {
-                                jarray = new JSONArray();
-                            } else {
-                                System.out.println("You sure that's a null output?");
-                                jarray = new JSONArray(readFromFile());
+                            // save shoe if it has not already been saved
+                            if (!shoeIsSaved(response.getString("shoeTitle"))){
+                                // write response to phone storage
+                                JSONArray jarray;
+                                if (readFromFile().equals("")) {
+                                    jarray = new JSONArray();
+                                } else {
+                                    System.out.println("You sure that's a null output?");
+                                    jarray = new JSONArray(readFromFile());
+                                }
+                                jarray.put(response);
+                                writeToFile(jarray.toString());
+                                System.out.println("Current length of array: " + jarray.length());
                             }
-                            jarray.put(response);
-                            writeToFile(jarray.toString());
-
-                            System.out.println("+++++++++FDHFJDKSHF+++++++++");
-                            System.out.println(response.toString());
 
                             // display details in pop up
                             shoeTitle.setText(response.getString("shoeTitle"));
@@ -320,7 +322,6 @@ public class Details extends Activity {
                             gtg[0] = true;
 
                             System.out.println("Title After wait: " + Name[0]);
-                            System.out.println("Current length of array: " + jarray.length());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -347,6 +348,31 @@ public class Details extends Activity {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         return jsonObjReq;
+    }
+
+    private boolean shoeIsSaved(String shoeTitle){
+        JSONArray jarray = null;
+        boolean saved = false;
+
+        if (!(readFromFile().equals(""))){
+            // read saved shoe data
+            try {
+                jarray = new JSONArray(readFromFile());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            // create list of all saved shoe names
+            final ArrayList<String> names = new ArrayList<String>();
+            JSONObject temp;
+            for (int i = 0; i < jarray.length(); i++) {
+                temp = jarray.optJSONObject(i);
+                if (shoeTitle.equals(temp.optString("shoeTitle"))){
+                    saved = true;
+                }
+            }
+        }
+        return saved;
     }
 
     private void writeToFile(String data) {
