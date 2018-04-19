@@ -13,14 +13,15 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000"
+    android:background="@color/primary"
     tools:context="edu.temple.solemate.MainActivity">
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/take_picture"
@@ -31,4 +32,4 @@
         app:srcCompat="@drawable/ic_camera"
         />
 
-</FrameLayout>
+</RelativeLayout>

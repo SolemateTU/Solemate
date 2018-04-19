@@ -41,7 +41,7 @@ public class PullList extends Activity {
 
 
     private TextView header;
-    private TextView dets;
+    private TextView price;
     private TextView shoeTitle;
     private ImageView dets_img;
 
@@ -72,14 +72,11 @@ public class PullList extends Activity {
         final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(this);
 
         /*for (int i = 0; i < jarray.length(); i++){
-
             temp= jarray.optJSONObject(i);
-
             names.add(temp.optString("shoeTitle"));
             desc.add(temp.optString("shoeDescription"));
             images.add(temp.optString("shoeImage"));
             prices.add(temp.optString("shoePrice"));
-
         }*/
 
         // TEST DATA
@@ -171,13 +168,13 @@ public class PullList extends Activity {
                         mBottomSheetDialog.cancel();
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                }
-        ) {
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                error.printStackTrace();
+                            }
+                        }
+                ) {
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -201,7 +198,7 @@ public class PullList extends Activity {
         System.out.println("MADE IT HERE 2");
         final View sheetView = this.getLayoutInflater().inflate(R.layout.pop_up_send, null);
         mBottomSheetDialog.setContentView(sheetView);
-        dets = (TextView) sheetView.findViewById(R.id.details);
+        price = (TextView) sheetView.findViewById(R.id.price);
         dets_img = (ImageView) sheetView.findViewById(R.id.detail_image);
 
         //sample header, can use this code to place in current data for this single instance

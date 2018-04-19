@@ -5,12 +5,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.util.Base64;
 import android.util.Log;
+
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -49,15 +52,18 @@ import java.util.Map;
 
 public class Details extends Activity {
 
+    // minimum dimension for scaling image
+    private int minDimension = 300;
+
     private ImageView image;
     private ImageView dets_img;
-    private TextView dets;
+    private Button price;
     private TextView shoeTitle;
 
     // urls
     final String url = "https://s17.postimg.cc/w2zg7k1u7/Solemate.gif";
     final String details_url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/identification-function";
-    final String identification_url = "https://1hoad2m4ka.execute-api.us-east-1.amazonaws.com/dev2";
+    final String identification_url = "http://eb-flask.xuzpjp4dih.us-east-1.elasticbeanstalk.com";
 
     private RequestQueue queue;
 
@@ -73,7 +79,7 @@ public class Details extends Activity {
 
         //initiating view objects
         image = (ImageView) findViewById(R.id.imageView3);
-        dets = (TextView) sheetView.findViewById(R.id.details);
+        price = (Button) sheetView.findViewById(R.id.price);
         dets_img = (ImageView) sheetView.findViewById(R.id.detail_image);
         shoeTitle = (TextView) sheetView.findViewById(R.id.header);
 
@@ -85,13 +91,14 @@ public class Details extends Activity {
 
         // get bitmap and encode as base64
         myBitmap = display_image(myBitmap);
-        String imageString = bitmapToBase64(myBitmap);
+        Bitmap scaledBitmap = scaleBitmap(myBitmap);
+        String imageString = bitmapToBase64(scaledBitmap);
 
         // build request body
         JSONObject postParams = new JSONObject();
         try {
             postParams.put("img", imageString);
-            postParams.put("userID", "test_id");
+            postParams.put("userID", "test");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -128,6 +135,8 @@ public class Details extends Activity {
             }
         });
 
+
+
         // display details pop-up
         mBottomSheetDialog.show();
 
@@ -139,27 +148,50 @@ public class Details extends Activity {
     private Bitmap display_image(Bitmap myBitmap) {
         //picture taken
         if (!getIntent().getExtras().getBoolean("boolean")) {
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@ If 1");
             //File imgFile = (File) getIntent().getExtras().get("picture");
-            //myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             myBitmap = BitmapFactory.decodeByteArray(
                     getIntent().getByteArrayExtra("byteArray"),0,getIntent().getByteArrayExtra("byteArray").length);
             image.setImageBitmap(myBitmap);
-            //image.setImageBitmap(myBitmap);
-            image.setRotation(90);
         }
         //picture from internal storage
         else {
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@ If 2");
             if ((boolean) getIntent().getExtras().get("boolean2")) {
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@ If 2.1");
                 byte[] decodedString = Base64.decode((String) getIntent().getExtras().get("picture2"), Base64.DEFAULT);
                 myBitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 image.setImageBitmap(myBitmap);
             } else {
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@ If 2.2");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
                 myBitmap = BitmapFactory.decodeFile((String) getIntent().getExtras().get("picture2"));
                 image.setImageBitmap(myBitmap);
             }
         }
         return myBitmap;
+    }
+
+    private Bitmap scaleBitmap(Bitmap myBitmap){
+        int w = myBitmap.getWidth();
+        int h = myBitmap.getHeight();
+
+        // minimum of width and height
+        int limitingDim = Math.min(w, h);
+
+        System.out.println(w);
+        System.out.println(h);
+        System.out.println(limitingDim);
+
+        double scalingFactor = (double)minDimension / (double)limitingDim;
+
+        System.out.println(scalingFactor);
+
+        return Bitmap.createScaledBitmap(
+                myBitmap,
+                (int)(w*scalingFactor),
+                (int)(h*scalingFactor),
+                true);
     }
 
     private String bitmapToBase64(Bitmap myBitmap) {
@@ -189,7 +221,7 @@ public class Details extends Activity {
                             String shoeID = response.getString("shoeID").replace("_Stock","");
                             shoeID = shoeID.replace("_stock", "");
                             System.out.println(shoeID);
-                            //shoeTitle.setText(shoeID.replace("_", " "));
+                            shoeTitle.setText(shoeID.replace("_", " "));
                             postParams.put("shoeID", shoeID);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -236,7 +268,7 @@ public class Details extends Activity {
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, details_url, postParams,
                 new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(final JSONObject response) {
                         System.out.println("++++++++++++REC REQUEST RETURN++++++++++++");
                         try {
                             // write response to phone storage
@@ -255,10 +287,28 @@ public class Details extends Activity {
 
                             // display details in pop up
                             shoeTitle.setText(response.getString("shoeTitle"));
-                            dets.setText(response.getString("shoePrice"));
+                            price.setText(response.getString("lowestPrice"));
 
                             Bitmap imageBitmap = base64ToBitmap(response.getString("shoeImage"));
                             dets_img.setImageBitmap(imageBitmap);
+
+                            price.setOnClickListener(new View.OnClickListener() {
+
+                                @Override
+                                public void onClick(View v) {
+                                    // TODO Auto-generated method stub
+                                    String url = null;
+                                    try {
+                                        url = response.getString("url");
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    Intent i = new Intent(Intent.ACTION_VIEW);
+                                    i.setData(Uri.parse(url));
+                                    startActivity(i);
+                                }
+                            });
 
                             // add details to intent
                             Name[0] = response.getString("shoeTitle");

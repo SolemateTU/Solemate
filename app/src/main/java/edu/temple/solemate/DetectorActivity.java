@@ -16,7 +16,10 @@
 
 package edu.temple.solemate;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -27,11 +30,19 @@ import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.media.ImageReader.OnImageAvailableListener;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.util.Size;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -81,6 +92,11 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private static final String YOLO_OUTPUT_NAMES = "output";
   private static final int YOLO_BLOCK_SIZE = 32;
 
+
+  private int counter;
+  private SharedPreferences sp;
+  private SharedPreferences.Editor editor;
+
   // Which detection model to use: by default uses Tensorflow Object Detection API frozen
   // checkpoints.  Optionally use legacy Multibox (trained using an older version of the API)
   // or YOLO.
@@ -102,6 +118,9 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private static final float TEXT_SIZE_DIP = 10;
 
   private Integer sensorOrientation;
+
+  private Handler handler;
+  private HandlerThread handlerThread;
 
   private Classifier detector;
 
@@ -125,6 +144,90 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
 
   private BorderedText borderedText;
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.main, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+
+
+    switch (item.getItemId()) {
+      case R.id.pull_button:
+                /*FragmentManager fragmentManager = getSupportFragmentManager();
+                if (mCameraView != null
+                        && fragmentManager.findFragmentByTag(FRAGMENT_DIALOG) == null) {
+                    final Set<AspectRatio> ratios = mCameraView.getSupportedAspectRatios();
+                    final AspectRatio currentRatio = mCameraView.getAspectRatio();
+                    AspectRatioFragment.newInstance(ratios, currentRatio)
+                            .show(fragmentManager, FRAGMENT_DIALOG);
+                }*/
+        startActivity(new Intent(DetectorActivity.this, PullList.class));
+
+
+        return true;
+      case R.id.list_button:
+                /*FragmentManager fragmentManager = getSupportFragmentManager();
+                if (mCameraView != null
+                        && fragmentManager.findFragmentByTag(FRAGMENT_DIALOG) == null) {
+                    final Set<AspectRatio> ratios = mCameraView.getSupportedAspectRatios();
+                    final AspectRatio currentRatio = mCameraView.getAspectRatio();
+                    AspectRatioFragment.newInstance(ratios, currentRatio)
+                            .show(fragmentManager, FRAGMENT_DIALOG);
+                }*/
+        startActivity(new Intent(DetectorActivity.this, SavedList.class));
+
+
+        return true;
+
+      case R.id.aspect_ratio:
+                /*FragmentManager fragmentManager = getSupportFragmentManager();
+                if (mCameraView != null
+                        && fragmentManager.findFragmentByTag(FRAGMENT_DIALOG) == null) {
+                    final Set<AspectRatio> ratios = mCameraView.getSupportedAspectRatios();
+                    final AspectRatio currentRatio = mCameraView.getAspectRatio();
+                    AspectRatioFragment.newInstance(ratios, currentRatio)
+                            .show(fragmentManager, FRAGMENT_DIALOG);
+                }*/
+        Intent i = new Intent(
+                Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        i.putExtra("boolean2", false);
+
+        startActivityForResult(i, PICK_IMAGE);
+
+
+        return true;
+
+    }
+    return super.onOptionsItemSelected(item);
+  }
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data)
+  {
+    if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && null != data) {
+      Uri selectedImage = data.getData();
+      String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+      Cursor cursor = getContentResolver().query(selectedImage,
+              filePathColumn, null, null, null);
+      cursor.moveToFirst();
+
+      int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+      String picturePath = cursor.getString(columnIndex);
+      System.out.println("Picture Path "+picturePath);
+      cursor.close();
+      Intent intent = new Intent(DetectorActivity.this, Details.class);
+      intent.putExtra("picture2", picturePath);
+      intent.putExtra("boolean", true);
+      intent.putExtra("boolean2", false);
+      startActivity(intent);
+    }
+  }
+
   @Override
   public void onPreviewSizeChosen(final Size size, final int rotation) {
     final float textSizePx =
@@ -195,8 +298,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
             ByteArrayOutputStream _bs = new ByteArrayOutputStream();
             croppedBitmap.compress(Bitmap.CompressFormat.PNG, 50, _bs);
             intent.putExtra("byteArray", _bs.toByteArray());
-              intent.putExtra("boolean", true);
-              intent.putExtra("boolean2", false);
+              intent.putExtra("boolean", false);
+             // intent.putExtra("boolean2", false);
             startActivity(intent);
         }
       }
@@ -206,6 +309,15 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
       fab.setOnClickListener(mOnClickListener);
       System.out.println("You should be doing something!!!!!!!!!!!!!!!!!!!!!!!!");
     }
+    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    setSupportActionBar(toolbar);
+    ActionBar actionBar = getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.setDisplayShowTitleEnabled(false);
+    }
+    sp = DetectorActivity.this.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+    editor = sp.edit();
+    counter= sp.getInt("count", 0);
 
     frameToCropTransform =
         ImageUtils.getTransformationMatrix(
@@ -362,6 +474,55 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
             computingDetection = false;
           }
         });
+  }
+
+  @Override
+  public synchronized void onStart() {
+    LOGGER.d("onStart " + this);
+    super.onStart();
+  }
+
+  @Override
+  public synchronized void onResume() {
+    LOGGER.d("onResume " + this);
+    super.onResume();
+
+    handlerThread = new HandlerThread("inference");
+    handlerThread.start();
+    handler = new Handler(handlerThread.getLooper());
+  }
+
+  @Override
+  public synchronized void onPause() {
+    LOGGER.d("onPause " + this);
+
+    /*if (!isFinishing()) {
+      LOGGER.d("Requesting finish");
+      finish();
+    }
+
+    handlerThread.quitSafely();
+    try {
+      handlerThread.join();
+      handlerThread = null;
+      handler = null;
+    } catch (final InterruptedException e) {
+      LOGGER.e(e, "Exception!");
+    }*/
+
+    super.onPause();
+  }
+
+  @Override
+  public synchronized void onStop() {
+    LOGGER.d("onStop " + this);
+    super.onStop();
+  }
+
+  @Override
+  public synchronized void onDestroy() {
+    LOGGER.d("onDestroy " + this);
+    super.onDestroy();
   }
 
   @Override

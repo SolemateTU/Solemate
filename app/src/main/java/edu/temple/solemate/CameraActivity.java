@@ -20,7 +20,9 @@ import android.Manifest;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
@@ -32,19 +34,27 @@ import android.media.Image;
 import android.media.Image.Plane;
 import android.media.ImageReader;
 import android.media.ImageReader.OnImageAvailableListener;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Trace;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Size;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import com.google.android.cameraview.CameraView;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
@@ -80,7 +90,32 @@ public abstract class CameraActivity extends AppCompatActivity
   private Runnable postInferenceCallback;
   private Runnable imageConverter;
 
-  @Override
+    private int counter;
+    private SharedPreferences sp;
+    private SharedPreferences.Editor editor;
+    public static final int PICK_IMAGE = 1;
+
+    private static final int[] FLASH_OPTIONS = {
+            CameraView.FLASH_AUTO,
+            CameraView.FLASH_OFF,
+            CameraView.FLASH_ON,
+    };
+
+    private static final int[] FLASH_ICONS = {
+            R.drawable.ic_flash_auto,
+            R.drawable.ic_flash_off,
+            R.drawable.ic_flash_on,
+    };
+
+    private static final int[] FLASH_TITLES = {
+            R.string.flash_auto,
+            R.string.flash_off,
+            R.string.flash_on,
+    };
+
+
+
+    @Override
   protected void onCreate(final Bundle savedInstanceState) {
     LOGGER.d("onCreate " + this);
     super.onCreate(null);
@@ -98,6 +133,16 @@ public abstract class CameraActivity extends AppCompatActivity
     } else {
       requestPermission();
     }
+
+      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      setSupportActionBar(toolbar);
+      ActionBar actionBar = getSupportActionBar();
+      if (actionBar != null) {
+          actionBar.setDisplayShowTitleEnabled(false);
+      }
+      sp = CameraActivity.this.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+      editor = sp.edit();
+      counter= sp.getInt("count", 0);
   }
 
   private byte[] lastPreviewFrame;
@@ -164,6 +209,91 @@ public abstract class CameraActivity extends AppCompatActivity
             };
     processImage();
   }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+
+        switch (item.getItemId()) {
+            case R.id.pull_button:
+                /*FragmentManager fragmentManager = getSupportFragmentManager();
+                if (mCameraView != null
+                        && fragmentManager.findFragmentByTag(FRAGMENT_DIALOG) == null) {
+                    final Set<AspectRatio> ratios = mCameraView.getSupportedAspectRatios();
+                    final AspectRatio currentRatio = mCameraView.getAspectRatio();
+                    AspectRatioFragment.newInstance(ratios, currentRatio)
+                            .show(fragmentManager, FRAGMENT_DIALOG);
+                }*/
+                startActivity(new Intent(CameraActivity.this, PullList.class));
+
+
+                return true;
+            case R.id.list_button:
+                /*FragmentManager fragmentManager = getSupportFragmentManager();
+                if (mCameraView != null
+                        && fragmentManager.findFragmentByTag(FRAGMENT_DIALOG) == null) {
+                    final Set<AspectRatio> ratios = mCameraView.getSupportedAspectRatios();
+                    final AspectRatio currentRatio = mCameraView.getAspectRatio();
+                    AspectRatioFragment.newInstance(ratios, currentRatio)
+                            .show(fragmentManager, FRAGMENT_DIALOG);
+                }*/
+                startActivity(new Intent(CameraActivity.this, SavedList.class));
+
+
+                return true;
+
+            case R.id.aspect_ratio:
+                /*FragmentManager fragmentManager = getSupportFragmentManager();
+                if (mCameraView != null
+                        && fragmentManager.findFragmentByTag(FRAGMENT_DIALOG) == null) {
+                    final Set<AspectRatio> ratios = mCameraView.getSupportedAspectRatios();
+                    final AspectRatio currentRatio = mCameraView.getAspectRatio();
+                    AspectRatioFragment.newInstance(ratios, currentRatio)
+                            .show(fragmentManager, FRAGMENT_DIALOG);
+                }*/
+                Intent i = new Intent(
+                        Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                i.putExtra("boolean2", false);
+
+                startActivityForResult(i, PICK_IMAGE);
+
+
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            System.out.println("Picture Path "+picturePath);
+            cursor.close();
+            Intent intent = new Intent(CameraActivity.this, Details.class);
+            intent.putExtra("picture2", picturePath);
+            intent.putExtra("boolean", true);
+            intent.putExtra("boolean2", false);
+            startActivity(intent);
+        }
+    }
+
+
 
   /**
    * Callback for Camera2 API
@@ -243,6 +373,7 @@ public abstract class CameraActivity extends AppCompatActivity
             bitmapImage.compress(Bitmap.CompressFormat.PNG, 50, _bs);
             intent.putExtra("byteArray", _bs.toByteArray());
             intent.putExtra("boolean", false);
+            //intent.putExtra("boolean2", false);
             startActivity(intent);
         }
       }
