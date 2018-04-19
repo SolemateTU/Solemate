@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "edu.temple.solemate"
         minSdkVersion 23
@@ -21,17 +21,19 @@ android {
 }
 
 dependencies {
-    compile 'com.android.volley:volley:1.1.0' // for http requests
+    compile 'com.mcxiaoke.volley:library:1.0.19'// for http requests
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "com.android.support:design:$supportLibraryVersion"
+    compile 'com.android.support:design:25.4.0'
     compile project(':library')
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile "com.android.support:appcompat-v7:25.4.0"
     testCompile 'junit:junit:4.12'
     compile project(path: ':library')
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'org.tensorflow:tensorflow-android:+'
 }
