@@ -53,7 +53,7 @@ import java.util.Map;
 public class Details extends Activity {
 
     // minimum dimension for scaling image
-    private int minDimension = 200;
+    private int minDimension = 300;
 
     private ImageView image;
     private ImageView dets_img;

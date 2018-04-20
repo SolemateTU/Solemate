@@ -293,8 +293,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     LOGGER.i("Camera orientation relative to screen canvas: %d", sensorOrientation);
 
     LOGGER.i("Initializing at size %dx%d", previewWidth, previewHeight);
-    rgbFrameBitmap = Bitmap.createBitmap(previewWidth, previewHeight, Config.ARGB_8888);
-    croppedBitmap = Bitmap.createBitmap(cropSize, cropSize, Config.ARGB_8888);
+    rgbFrameBitmap = Bitmap.createBitmap(previewWidth, previewHeight, Config.RGB_565);
+    croppedBitmap = Bitmap.createBitmap(cropSize, cropSize, Config.RGB_565);
     mOnClickListener = new View.OnClickListener() {
       @Override
       public void onClick(View v) {
