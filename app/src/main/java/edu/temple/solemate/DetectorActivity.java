@@ -77,9 +77,12 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
       "file:///android_asset/multibox_location_priors.txt";
 
   private static final int TF_OD_API_INPUT_SIZE = 300;
-  private static final String TF_OD_API_MODEL_FILE =
-      "file:///android_asset/ssd_mobilenet_v1_android_export.pb";
+  //private static final String TF_OD_API_MODEL_FILE = "file:///android_asset/resnet50_predict_net.pb";
+  //private static final String TF_OD_API_MODEL_FILE ="file:///android_asset/tensorflow_inception_graph.pb";
+  private static final String TF_OD_API_MODEL_FILE ="file:///android_asset/ssd_mobilenet_v1_android_export.pb";
+  //private static final String TF_OD_API_LABELS_FILE = "file:///android_asset/imagenet_comp_graph_label_strings.txt";
   private static final String TF_OD_API_LABELS_FILE = "file:///android_asset/coco_labels_list.txt";
+
 
   // Configuration values for tiny-yolo-voc. Note that the graph is not included with TensorFlow and
   // must be manually placed in the assets/ directory by the user.
@@ -93,6 +96,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private static final int YOLO_BLOCK_SIZE = 32;
 
 
+  public static final int PICK_IMAGE = 1;
   private int counter;
   private SharedPreferences sp;
   private SharedPreferences.Editor editor;
@@ -192,12 +196,18 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                     AspectRatioFragment.newInstance(ratios, currentRatio)
                             .show(fragmentManager, FRAGMENT_DIALOG);
                 }*/
-        Intent i = new Intent(
+        /*Intent i = new Intent(
                 Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         i.putExtra("boolean2", false);
 
-        startActivityForResult(i, PICK_IMAGE);
+        startActivityForResult(i, PICK_IMAGE);*/
+
+        Intent intent = new Intent(DetectorActivity.this, Internal.class);
+        //intent.putExtra("boolean", true);
+        //intent.putExtra("boolean2", false);
+        System.out.println("@@@@@@@@@@@@Going to Internal");
+        startActivity(intent);
 
 
         return true;
@@ -224,6 +234,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
       intent.putExtra("picture2", picturePath);
       intent.putExtra("boolean", true);
       intent.putExtra("boolean2", false);
+      System.out.println("@@@@@@@@@@@@Going to Details");
       startActivity(intent);
     }
   }
@@ -263,8 +274,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
       cropSize = MB_INPUT_SIZE;
     } else {
       try {
-        detector = TensorFlowObjectDetectionAPIModel.create(
-            getAssets(), TF_OD_API_MODEL_FILE, TF_OD_API_LABELS_FILE, TF_OD_API_INPUT_SIZE);
+        detector = TensorFlowObjectDetectionAPIModel.create(getAssets(), TF_OD_API_MODEL_FILE, TF_OD_API_LABELS_FILE, TF_OD_API_INPUT_SIZE);
         cropSize = TF_OD_API_INPUT_SIZE;
       } catch (final IOException e) {
         LOGGER.e("Exception initializing classifier!", e);
@@ -458,12 +468,20 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
             for (final Classifier.Recognition result : results) {
               final RectF location = result.getLocation();
-              if (location != null && result.getConfidence() >= minimumConfidence) {
-                canvas.drawRect(location, paint);
+              if (location != null && result.getConfidence() >= minimumConfidence ) {
+                if(result.getTitle().isEmpty()){
+                  //System.out.println("@@@@WOW YOUR LOGIC IS SHIT");
+                  //System.out.println("@@@@TITLENOW: "+result.getTitle());
+                }
 
-                cropToFrameTransform.mapRect(location);
-                result.setLocation(location);
-                mappedRecognitions.add(result);
+                else {
+                  canvas.drawRect(location, paint);
+
+                  System.out.println("@@@@TITLE: " + result.getTitle());
+                  cropToFrameTransform.mapRect(location);
+                  result.setLocation(location);
+                  mappedRecognitions.add(result);
+                }
               }
             }
 
@@ -498,7 +516,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
     /*if (!isFinishing()) {
       LOGGER.d("Requesting finish");
-      finish();
+      //finish();
     }
 
     handlerThread.quitSafely();

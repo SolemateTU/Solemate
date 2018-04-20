@@ -97,7 +97,7 @@ public class SavedList extends Activity {
         ////////////////////////
 
         CustomList adapter = new
-                CustomList(SavedList.this, names, desc, images, true, web, weeb, imageId);
+                CustomList(SavedList.this, names, desc, images);
         list=(ListView)findViewById(R.id.list);
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -156,5 +156,11 @@ public class SavedList extends Activity {
 
         System.out.println("DATA BEING READ: "+ret);
         return ret;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent startMain = new Intent(SavedList.this, DetectorActivity.class);
+        startActivity(startMain);
     }
 }

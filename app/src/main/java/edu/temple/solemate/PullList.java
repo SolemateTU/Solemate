@@ -241,6 +241,11 @@ public class PullList extends Activity {
 
 
     }
+    @Override
+    public void onBackPressed() {
+        Intent startMain = new Intent(PullList.this, DetectorActivity.class);
+        startActivity(startMain);
+    }
 
 
 }

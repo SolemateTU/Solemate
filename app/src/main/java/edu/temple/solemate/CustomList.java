@@ -20,27 +20,19 @@ import java.util.ArrayList;
 public class CustomList extends ArrayAdapter<String>{
 
     private final Activity context;
-    private final   ArrayList<String> web;
-    private   ArrayList<String> weeb;
-    private final   ArrayList<String> imageId;
-    private final String[] webfake;
-    private   String[] weebfake;
-    private  final Integer[] imageIdfake;
-    private boolean mode;
+    private final ArrayList<String> shoeIDs;
+    private ArrayList<String> imgStrings;
+    private final ArrayList<String> shoeDescriptions;
 
     public CustomList(Activity context,
-                      ArrayList<String> web,   ArrayList<String> weeb,   ArrayList<String> imageId, boolean real, String[] fakename, String[] fakedesc, Integer[] fakeimage) {
-        super(context, R.layout.list_single, web);
+                      ArrayList<String> shoeIDs,   ArrayList<String> shoeDescriptions,   ArrayList<String> imgStrings) {
+        super(context, R.layout.list_single, shoeIDs);
         this.context = context;
-        this.web = web;
-        this.weeb = weeb;
-        this.imageId = imageId;
 
-        this.webfake= fakename;
-        this.weebfake= fakedesc;
-        this.imageIdfake= fakeimage;
+        this.shoeIDs = shoeIDs;
+        this.shoeDescriptions = shoeDescriptions;
+        this.imgStrings = imgStrings;
 
-        mode= real;
 
     }
     @Override
@@ -51,19 +43,21 @@ public class CustomList extends ArrayAdapter<String>{
         TextView txtDetails = (TextView) rowView.findViewById(R.id.txt2);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.img);
 
-        if (mode) {
-            txtTitle.setText(web.get(position));
-            txtDetails.setText(weeb.get(position));
+        if (shoeIDs.size() != 0) {
 
-            byte[] decodedString = Base64.decode(imageId.get(position), Base64.DEFAULT);
+            txtTitle.setText(shoeIDs.get(position));
+            txtDetails.setText(shoeDescriptions.get(position));
+
+            byte[] decodedString = Base64.decode(imgStrings.get(position), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             imageView.setImageBitmap(decodedByte);
         }
-        else {
-            txtTitle.setText(webfake[position]);
-            txtDetails.setText(weebfake[position]);
-            imageView.setImageResource(imageIdfake[position]);
-        }
+
         return rowView;
+    }
+
+    @Override
+    public int getCount() {
+        return shoeIDs!=null ? shoeIDs.size() : 0;
     }
 }
