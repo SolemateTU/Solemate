@@ -364,6 +364,7 @@ public abstract class CameraActivity extends AppCompatActivity
       public void onClick(View v) {
         switch (v.getId()) {
           case R.id.take_picture:
+            //System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
             Intent intent = new Intent(CameraActivity.this, Details.class);
             ByteBuffer buffer = temp.getPlanes()[0].getBuffer();
             byte[] bytes = new byte[buffer.capacity()];

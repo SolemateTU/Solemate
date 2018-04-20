@@ -60,7 +60,7 @@ public class PullList extends Activity {
 
         final RequestQueue queue = Volley.newRequestQueue(this);
         final String id_url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/get-user-images";
-        final String url = "https://s7.postimg.org/lavivuo23/Solemate.gif";
+        final String url = "https://s17.postimg.cc/w2zg7k1u7/Solemate.gif";
 
 
         final ArrayList<String> names = new ArrayList<String>();

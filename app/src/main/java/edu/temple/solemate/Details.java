@@ -53,7 +53,7 @@ import java.util.Map;
 public class Details extends Activity {
 
     // minimum dimension for scaling image
-    private int minDimension = 300;
+    private int minDimension = 200;
 
     private ImageView image;
     private ImageView dets_img;
@@ -92,6 +92,7 @@ public class Details extends Activity {
         // get bitmap and encode as base64
         myBitmap = display_image(myBitmap);
         Bitmap scaledBitmap = scaleBitmap(myBitmap);
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         String imageString = bitmapToBase64(scaledBitmap);
 
         // build request body
@@ -153,6 +154,7 @@ public class Details extends Activity {
             myBitmap = BitmapFactory.decodeByteArray(
                     getIntent().getByteArrayExtra("byteArray"),0,getIntent().getByteArrayExtra("byteArray").length);
             image.setImageBitmap(myBitmap);
+            //System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
         //picture from internal storage
         else {
