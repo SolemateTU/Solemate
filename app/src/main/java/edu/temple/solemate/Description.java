@@ -48,7 +48,6 @@ public class Description extends Activity {
     private ImageView i;
 
     // for suggestion list fake data
-    ListView list;
 
     ArrayList<String> shoeIDs = new ArrayList<String>();
     ArrayList<String> shoeDescriptions = new ArrayList<String>();
@@ -62,11 +61,26 @@ public class Description extends Activity {
     final String recommendation_url = "http://eb-rec-flask-dev.us-east-1.elasticbeanstalk.com";
     final String details_url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/identification-function";
 
+    CustomList adapter;
+    ListView list;
+
     protected void onCreate (Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.desc);
         t = (TextView) findViewById(R.id.tv);
         i = (ImageView) findViewById(R.id.image);
+
+        shoeIDs.add("loading...");
+        shoeIDs.add("loading...");
+        shoeIDs.add("loading...");
+
+        shoeDescriptions.add("");
+        shoeDescriptions.add("");
+        shoeDescriptions.add("");
+
+        imgStrings.add("");
+        imgStrings.add("");
+        imgStrings.add("");
 
         // Instantiate the RequestQueue.
         queue = Volley.newRequestQueue(this);
@@ -84,10 +98,14 @@ public class Description extends Activity {
         t.setText(name + " " + details + " " + price);
 
         JsonObjectRequest recommendation_request = buildRecommendationRequest();
+        System.out.println("+++++++MAKING REC REQUEST++++++++");
         queue.add(recommendation_request);
 
         // set list click listener
         list = (ListView)findViewById(R.id.list);
+        adapter = new CustomList(Description.this, shoeIDs, shoeDescriptions, imgStrings);
+
+        list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -107,7 +125,7 @@ public class Description extends Activity {
     }
 
 
-    private JsonObjectRequest buildDetailsRequest(String shoeID, final int index) {
+    private JsonObjectRequest buildDetailsRequest(final String shoeID, final int index) {
         // add shoeID to json request body
         JSONObject postParams = new JSONObject();
         try {
@@ -120,19 +138,20 @@ public class Description extends Activity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(final JSONObject response) {
+
                         // update arrayAdapter lists with shoe details
                         try {
-                            shoeIDs.add(index, response.getString("shoeTitle"));
-                            shoeDescriptions.add(index, response.getString("lowestPrice"));
-                            imgStrings.add(index, response.getString("shoeImage"));
+                            System.out.println("+++++++DETAILS RETURNED FOR "+ response.getString("shoeTitle"));
+                            shoeIDs.set(index, response.getString("shoeTitle"));
+                            shoeDescriptions.set(index, response.getString("lowestPrice"));
+                            imgStrings.set(index, response.getString("shoeImage"));
                         } catch (JSONException e) {
+                            System.out.println("ERROR GETTING DETAILS FOR " + shoeID);
                             e.printStackTrace();
                         }
 
                         // create arraylist adapter and render the list with the updated shoe details
-                        CustomList adapter = new
-                                CustomList(Description.this, shoeIDs, shoeDescriptions, imgStrings);
-                        list=(ListView)findViewById(R.id.list);
+
                         list.setAdapter(adapter);
                     }
                 },
@@ -174,12 +193,13 @@ public class Description extends Activity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(final JSONObject response) {
+                        System.out.println("+++++++RESPONSE FROM REC MODEL++++++++");
                         // build list with returned shoe IDs
                         String[] ids = new String[3];
                         try {
-                            ids[0] = response.getString("shoeID-1").replace("_stock","").toLowerCase();
-                            ids[1] = response.getString("shoeID-2").replace("_stock","").toLowerCase();
-                            ids[2] = response.getString("shoeID-3").replace("_stock","").toLowerCase();
+                            ids[0] = response.getString("shoeID-1").toLowerCase().replace("_stock","").toLowerCase();
+                            ids[1] = response.getString("shoeID-2").toLowerCase().replace("_stock","").toLowerCase();
+                            ids[2] = response.getString("shoeID-3").toLowerCase().replace("_stock","").toLowerCase();
                             System.out.println(ids[0]);
                             System.out.println(ids[1]);
                             System.out.println(ids[2]);
@@ -189,6 +209,7 @@ public class Description extends Activity {
 
                         // get details for each required shoe from AWS
                         for (int i = 0; i < 3; i++){
+                            System.out.println("+++++++GETTING DETAILS FOR " + ids[i]);
                             JsonObjectRequest req = buildDetailsRequest(ids[i], i);
                             queue.add(req);
                         }
