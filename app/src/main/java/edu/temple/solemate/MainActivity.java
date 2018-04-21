@@ -34,6 +34,8 @@ import android.widget.Toast;
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.CameraView;
 
+import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -58,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
+
+    private TensorFlowInferenceInterface inferenceInterface;
 
 
     private static final int[] FLASH_OPTIONS = {
@@ -252,21 +256,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
                 return true;
-            case R.id.switch_flash:
-                if (mCameraView != null) {
-                    mCurrentFlash = (mCurrentFlash + 1) % FLASH_OPTIONS.length;
-                    item.setTitle(FLASH_TITLES[mCurrentFlash]);
-                    item.setIcon(FLASH_ICONS[mCurrentFlash]);
-                    mCameraView.setFlash(FLASH_OPTIONS[mCurrentFlash]);
-                }
-                return true;
-            case R.id.switch_camera:
-                if (mCameraView != null) {
-                    int facing = mCameraView.getFacing();
-                    mCameraView.setFacing(facing == CameraView.FACING_FRONT ?
-                            CameraView.FACING_BACK : CameraView.FACING_FRONT);
-                }
-                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }

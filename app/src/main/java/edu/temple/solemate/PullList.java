@@ -60,7 +60,7 @@ public class PullList extends Activity {
 
         final RequestQueue queue = Volley.newRequestQueue(this);
         final String id_url = "https://3wpql46dsk.execute-api.us-east-1.amazonaws.com/prod/get-user-images";
-        final String url = "https://s7.postimg.org/lavivuo23/Solemate.gif";
+        final String url = "https://s17.postimg.cc/w2zg7k1u7/Solemate.gif";
 
 
         final ArrayList<String> names = new ArrayList<String>();
@@ -72,14 +72,11 @@ public class PullList extends Activity {
         final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(this);
 
         /*for (int i = 0; i < jarray.length(); i++){
-
             temp= jarray.optJSONObject(i);
-
             names.add(temp.optString("shoeTitle"));
             desc.add(temp.optString("shoeDescription"));
             images.add(temp.optString("shoeImage"));
             prices.add(temp.optString("shoePrice"));
-
         }*/
 
         // TEST DATA
@@ -171,13 +168,13 @@ public class PullList extends Activity {
                         mBottomSheetDialog.cancel();
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                }
-        ) {
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                error.printStackTrace();
+                            }
+                        }
+                ) {
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -243,6 +240,11 @@ public class PullList extends Activity {
 
 
 
+    }
+    @Override
+    public void onBackPressed() {
+        Intent startMain = new Intent(PullList.this, DetectorActivity.class);
+        startActivity(startMain);
     }
 
 

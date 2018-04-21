@@ -149,18 +149,23 @@ public class Details extends Activity {
     private Bitmap display_image(Bitmap myBitmap) {
         //picture taken
         if (!getIntent().getExtras().getBoolean("boolean")) {
-            File imgFile = (File) getIntent().getExtras().get("picture");
-            myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@ If 1");
+            //File imgFile = (File) getIntent().getExtras().get("picture");
+            myBitmap = BitmapFactory.decodeByteArray(
+                    getIntent().getByteArrayExtra("byteArray"),0,getIntent().getByteArrayExtra("byteArray").length);
             image.setImageBitmap(myBitmap);
-            image.setRotation(90);
+            //System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
         //picture from internal storage
         else {
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@ If 2");
             if ((boolean) getIntent().getExtras().get("boolean2")) {
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@ If 2.1");
                 byte[] decodedString = Base64.decode((String) getIntent().getExtras().get("picture2"), Base64.DEFAULT);
                 myBitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 image.setImageBitmap(myBitmap);
             } else {
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@ If 2.2");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
                 myBitmap = BitmapFactory.decodeFile((String) getIntent().getExtras().get("picture2"));
                 image.setImageBitmap(myBitmap);
@@ -185,10 +190,10 @@ public class Details extends Activity {
         System.out.println(scalingFactor);
 
         return Bitmap.createScaledBitmap(
-                                myBitmap,
-                                (int)(w*scalingFactor),
-                                (int)(h*scalingFactor),
-                                true);
+                myBitmap,
+                (int)(w*scalingFactor),
+                (int)(h*scalingFactor),
+                true);
     }
 
     private String bitmapToBase64(Bitmap myBitmap) {
@@ -373,6 +378,14 @@ public class Details extends Activity {
             }
         }
         return saved;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent startMain = new Intent(Details.this, DetectorActivity.class);
+        //startMain.addCategory(Intent.CATEGORY_HOME);
+        //startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
     }
 
     private void writeToFile(String data) {

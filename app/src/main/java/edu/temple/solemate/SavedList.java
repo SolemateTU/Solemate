@@ -157,4 +157,10 @@ public class SavedList extends Activity {
         System.out.println("DATA BEING READ: "+ret);
         return ret;
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent startMain = new Intent(SavedList.this, DetectorActivity.class);
+        startActivity(startMain);
+    }
 }
