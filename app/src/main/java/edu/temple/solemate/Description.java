@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -39,6 +40,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,13 +76,19 @@ public class Description extends Activity {
 
     CustomList adapter;
     ListView list;
+    Button priceButton;
+    TextView shoeName;
+    TextView linkDetails;
 
     protected void onCreate (Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.desc);
         t = (TextView) findViewById(R.id.tv);
         i = (ImageView) findViewById(R.id.image);
+        priceButton = (Button) findViewById(R.id.shoePriceButton);
+        shoeName = (TextView) findViewById(R.id.shoeName);
 
+        // initialize recommended shoe arrays
         shoeIDs.add("loading...");
         shoeIDs.add("loading...");
         shoeIDs.add("loading...");
@@ -89,9 +97,13 @@ public class Description extends Activity {
         shoeDescriptions.add("");
         shoeDescriptions.add("");
 
-        imgStrings.add("");
-        imgStrings.add("");
-        imgStrings.add("");
+        // get b64 string for stock loading image
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.shoe_place_holder);
+        String bmString = bitmapToBase64(bm);
+
+        imgStrings.add(bmString);
+        imgStrings.add(bmString);
+        imgStrings.add(bmString);
 
         // Instantiate the RequestQueue.
         queue = Volley.newRequestQueue(this);
@@ -101,12 +113,26 @@ public class Description extends Activity {
         String price = getIntent().getStringExtra("price");
         String details = getIntent().getStringExtra("details");
         String img = getIntent().getStringExtra("image");
+        final String url = getIntent().getStringExtra("url");
 
         byte[] decodedString = Base64.decode(img, Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         i.setImageBitmap(decodedByte);
+        shoeName.setText(name);
+        t.setText(details);
 
-        t.setText(name + " " + details + " " + price);
+        priceButton.setText(price);
+        priceButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+            }
+        });
 
         JsonObjectRequest recommendation_request = buildRecommendationRequest();
         System.out.println("+++++++MAKING REC REQUEST++++++++");
@@ -133,6 +159,16 @@ public class Description extends Activity {
 
             }
         });
+    }
+
+    private String bitmapToBase64(Bitmap myBitmap) {
+        //bitmap to byte array
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        myBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        String imageString = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+        return imageString;
     }
 
 

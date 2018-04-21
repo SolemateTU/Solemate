@@ -315,7 +315,7 @@ public class Details extends Activity {
 
                             // add details to intent
                             Name[0] = response.getString("shoeTitle");
-                            Price[0] = response.getString("shoePrice");
+                            Price[0] = response.getString("lowestPrice");
                             Details[0] = response.getString("shoeDescription");
                             tosave[0] = response.getString("shoeImage");
 
@@ -323,6 +323,7 @@ public class Details extends Activity {
                             intent.putExtra("price", Price[0]);
                             intent.putExtra("details", Details[0]);
                             intent.putExtra("image", tosave[0]);
+                            intent.putExtra("url", response.getString("url"));
 
                             gtg[0] = true;
 

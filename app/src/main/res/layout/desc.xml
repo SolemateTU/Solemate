@@ -5,36 +5,71 @@ android:orientation="vertical"
 android:layout_width="match_parent"
 android:layout_height="match_parent">
 
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <TextView
-        android:text="TextView"
+    <RelativeLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/shoeName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignStart="@+id/tv"
+            android:layout_marginTop="15dp"
+            android:text="TextView"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/shoePriceButton"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/tv"
+            android:layout_alignParentTop="true"
+            android:text="Button"
+            android:textColor="@android:color/holo_blue_dark"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/image"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="15dp"
+            android:text="TextView" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tv"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:text="You may also like:" />
+
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/shoeName"
+            android:adjustViewBounds="true"
+            app:srcCompat="@android:drawable/alert_dark_frame" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tv"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/image" />
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
 
-
-    <ImageView
-        android:adjustViewBounds="true"
-        android:layout_width="103dp"
-        android:layout_height="102dp"
-        app:srcCompat="@android:drawable/alert_dark_frame"
-        android:id="@+id/image"
-        android:layout_marginTop="10dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-</RelativeLayout>
-
-<ListView
-    android:id="@+id/list"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
-
-</ListView>
+    </ListView>
 
 </LinearLayout>
