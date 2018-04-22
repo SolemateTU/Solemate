@@ -12,15 +12,15 @@ import android.graphics.RectF;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.TypedValue;
-import android.widget.Toast;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import edu.temple.solemate.Classifier.Recognition;
 import edu.temple.solemate.env.BorderedText;
 import edu.temple.solemate.env.ImageUtils;
 import edu.temple.solemate.env.Logger;
-import edu.temple.solemate.Classifier.Recognition;
 
 /**
  * A tracker wrapping ObjectTracker that also handles non-max suppression and matching existing
@@ -202,7 +202,7 @@ public class MultiBoxTracker {
                 String message =
                         "Object tracking support not found. "
                                 + "See tensorflow/examples/android/README.md for details.";
-                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, message, Toast.LENGTH_LONG).show();
                 logger.e(message);
             }
         }
