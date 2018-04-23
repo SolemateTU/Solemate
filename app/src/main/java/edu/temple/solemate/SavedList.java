@@ -61,7 +61,7 @@ public class SavedList extends Activity {
             names.add(temp.optString("shoeTitle"));
             desc.add(temp.optString("shoeDescription"));
             images.add(temp.optString("shoeImage"));
-            prices.add(temp.optString("shoePrice"));
+            prices.add(temp.optString("lowestPrice"));
 
         }
 
@@ -97,7 +97,7 @@ public class SavedList extends Activity {
         ////////////////////////
 
         CustomList adapter = new
-                CustomList(SavedList.this, names, desc, images);
+                CustomList(SavedList.this, names, prices, desc, images);
         list=(ListView)findViewById(R.id.list);
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {

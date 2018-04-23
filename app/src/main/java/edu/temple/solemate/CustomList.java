@@ -23,15 +23,17 @@ public class CustomList extends ArrayAdapter<String>{
     private final ArrayList<String> shoeIDs;
     private ArrayList<String> imgStrings;
     private final ArrayList<String> shoeDescriptions;
+    private final ArrayList<String> shoePrices;
 
     public CustomList(Activity context,
-                      ArrayList<String> shoeIDs,   ArrayList<String> shoeDescriptions,   ArrayList<String> imgStrings) {
+                      ArrayList<String> shoeIDs, ArrayList<String> shoePrices,  ArrayList<String> shoeDescriptions,   ArrayList<String> imgStrings) {
         super(context, R.layout.list_single, shoeIDs);
         this.context = context;
 
         this.shoeIDs = shoeIDs;
         this.shoeDescriptions = shoeDescriptions;
         this.imgStrings = imgStrings;
+        this.shoePrices = shoePrices;
 
 
     }
@@ -46,7 +48,7 @@ public class CustomList extends ArrayAdapter<String>{
         if (shoeIDs.size() != 0) {
 
             txtTitle.setText(shoeIDs.get(position));
-            txtDetails.setText(shoeDescriptions.get(position));
+            txtDetails.setText(shoePrices.get(position));
 
             byte[] decodedString = Base64.decode(imgStrings.get(position), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);

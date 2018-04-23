@@ -65,6 +65,7 @@ public class Description extends Activity {
     ArrayList<String> shoeIDs = new ArrayList<String>();
     ArrayList<String> shoeDescriptions = new ArrayList<String>();
     ArrayList<String> imgStrings = new ArrayList<String>();
+    ArrayList<String> shoePrices = new ArrayList<String>();
 
 
     ////////////////////////
@@ -78,7 +79,6 @@ public class Description extends Activity {
     ListView list;
     Button priceButton;
     TextView shoeName;
-    TextView linkDetails;
 
     protected void onCreate (Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -96,6 +96,11 @@ public class Description extends Activity {
         shoeDescriptions.add("");
         shoeDescriptions.add("");
         shoeDescriptions.add("");
+
+        shoePrices.add("");
+        shoePrices.add("");
+        shoePrices.add("");
+
 
         // get b64 string for stock loading image
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.shoe_place_holder);
@@ -140,7 +145,7 @@ public class Description extends Activity {
 
         // set list click listener
         list = (ListView)findViewById(R.id.list);
-        adapter = new CustomList(Description.this, shoeIDs, shoeDescriptions, imgStrings);
+        adapter = new CustomList(Description.this, shoeIDs, shoePrices, shoeDescriptions, imgStrings);
 
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -153,7 +158,7 @@ public class Description extends Activity {
                 Intent intent= new Intent(Description.this, Description.class);
                 intent.putExtra("name", shoeIDs.get(position));
                 intent.putExtra("details", shoeDescriptions.get(position));
-                intent.putExtra("price", shoeDescriptions.get(position));
+                intent.putExtra("price", shoePrices.get(position));
                 intent.putExtra("image", imgStrings.get(position));
                 startActivity(intent);
 
@@ -190,8 +195,9 @@ public class Description extends Activity {
                         try {
                             System.out.println("+++++++DETAILS RETURNED FOR "+ response.getString("shoeTitle"));
                             shoeIDs.set(index, response.getString("shoeTitle"));
-                            shoeDescriptions.set(index, response.getString("lowestPrice"));
+                            shoeDescriptions.set(index, response.getString("shoeDescription"));
                             imgStrings.set(index, response.getString("shoeImage"));
+                            shoePrices.set(index, response.getString("lowestPrice"));
                         } catch (JSONException e) {
                             System.out.println("ERROR GETTING DETAILS FOR " + shoeID);
                             e.printStackTrace();
