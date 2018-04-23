@@ -99,7 +99,7 @@ public class Details extends Activity {
         JSONObject postParams = new JSONObject();
         try {
             postParams.put("img", imageString);
-            postParams.put("userID", "test");
+            postParams.put("userID", "demo_3_test_android1");
         } catch (JSONException e) {
             e.printStackTrace();
         }

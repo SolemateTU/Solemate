@@ -112,7 +112,7 @@ public class PullList extends Activity {
         // build json object
         JSONObject postparams = new JSONObject();
         try {
-            postparams.put("userID", "charlie");
+            postparams.put("userID", "demo_3_test_android1");
         } catch (JSONException e) {
             e.printStackTrace();
         }
