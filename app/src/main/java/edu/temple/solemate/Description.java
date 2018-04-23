@@ -66,6 +66,7 @@ public class Description extends Activity {
     ArrayList<String> shoeDescriptions = new ArrayList<String>();
     ArrayList<String> imgStrings = new ArrayList<String>();
     ArrayList<String> shoePrices = new ArrayList<String>();
+    ArrayList<String> urls = new ArrayList<String>();
 
 
     ////////////////////////
@@ -100,6 +101,11 @@ public class Description extends Activity {
         shoePrices.add("");
         shoePrices.add("");
         shoePrices.add("");
+
+        urls.add("");
+        urls.add("");
+        urls.add("");
+
 
 
         // get b64 string for stock loading image
@@ -160,6 +166,8 @@ public class Description extends Activity {
                 intent.putExtra("details", shoeDescriptions.get(position));
                 intent.putExtra("price", shoePrices.get(position));
                 intent.putExtra("image", imgStrings.get(position));
+                intent.putExtra("url", urls.get(position));
+
                 startActivity(intent);
 
             }
@@ -198,6 +206,7 @@ public class Description extends Activity {
                             shoeDescriptions.set(index, response.getString("shoeDescription"));
                             imgStrings.set(index, response.getString("shoeImage"));
                             shoePrices.set(index, response.getString("lowestPrice"));
+                            urls.set(index, response.getString("url"));
                         } catch (JSONException e) {
                             System.out.println("ERROR GETTING DETAILS FOR " + shoeID);
                             e.printStackTrace();
