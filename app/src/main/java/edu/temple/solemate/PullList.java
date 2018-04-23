@@ -186,7 +186,7 @@ public class PullList extends Activity {
 
         // prevent request timeout
         postRequest.setRetryPolicy(new DefaultRetryPolicy(
-                5000,
+                50000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
