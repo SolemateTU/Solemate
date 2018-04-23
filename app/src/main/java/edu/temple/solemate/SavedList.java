@@ -52,6 +52,7 @@ public class SavedList extends Activity {
         final ArrayList<String> desc = new ArrayList<String>();
         final ArrayList<String> images = new ArrayList<String>();
         final ArrayList<String> prices = new ArrayList<String>();
+        final ArrayList<String> urls = new ArrayList<String>();
         JSONObject temp;
 
         for (int i = 0; i < jarray.length(); i++){
@@ -62,6 +63,7 @@ public class SavedList extends Activity {
             desc.add(temp.optString("shoeDescription"));
             images.add(temp.optString("shoeImage"));
             prices.add(temp.optString("lowestPrice"));
+            urls.add(temp.optString("url"));
 
         }
 
@@ -111,6 +113,7 @@ public class SavedList extends Activity {
                 intent.putExtra("details", desc.get(position));
                 intent.putExtra("price", prices.get(position));
                 intent.putExtra("image", images.get(position));
+                intent.putExtra("url", urls.get(position));
 
                 System.out.println("Name: "+names.get(position));
                 System.out.println("Details: "+desc.get(position));
