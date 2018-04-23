@@ -33,8 +33,8 @@ public class Size implements Comparable<Size> {
      * @param height The height of the size, in pixels
      */
     public Size(int width, int height) {
-        mWidth = width/6;
-        mHeight = height/6;
+        mWidth = width;
+        mHeight = height;
     }
 
     public int getWidth() {

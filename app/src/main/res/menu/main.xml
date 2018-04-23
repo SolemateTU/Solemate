@@ -17,6 +17,11 @@
 
 
     <item
+        android:id="@+id/auto_button"
+        android:icon="@drawable/automation"
+        android:title="Pull"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/pull_button"
         android:icon="@drawable/ic_pull"
         android:title="Pull"

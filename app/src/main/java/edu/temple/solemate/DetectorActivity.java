@@ -115,6 +115,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private static final float MINIMUM_CONFIDENCE_YOLO = 0.25f;
 
   private static final boolean MAINTAIN_ASPECT = MODE == DetectorMode.YOLO;
+  private boolean automation= false;
 
   private static final Size DESIRED_PREVIEW_SIZE = new Size(640, 480);
 
@@ -149,6 +150,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
   private BorderedText borderedText;
 
+  private FloatingActionButton fab;
+
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.main, menu);
@@ -160,6 +163,27 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
 
     switch (item.getItemId()) {
+      case R.id.auto_button:
+                /*FragmentManager fragmentManager = getSupportFragmentManager();
+                if (mCameraView != null
+                        && fragmentManager.findFragmentByTag(FRAGMENT_DIALOG) == null) {
+                    final Set<AspectRatio> ratios = mCameraView.getSupportedAspectRatios();
+                    final AspectRatio currentRatio = mCameraView.getAspectRatio();
+                    AspectRatioFragment.newInstance(ratios, currentRatio)
+                            .show(fragmentManager, FRAGMENT_DIALOG);
+                }*/
+        if (automation==false){
+                automation=true;
+        }
+        else{
+          automation=false;
+        }
+
+        Toast toast = Toast.makeText(
+                getApplicationContext(), "Automation: "+automation, Toast.LENGTH_SHORT);
+        toast.show();
+
+        return true;
       case R.id.pull_button:
                 /*FragmentManager fragmentManager = getSupportFragmentManager();
                 if (mCameraView != null
@@ -314,11 +338,11 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
         }
       }
     };
-    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.take_picture);
+    fab = (FloatingActionButton) findViewById(R.id.take_picture);
     if (fab != null) {
       fab.setOnClickListener(mOnClickListener);
-      System.out.println("You should be doing something!!!!!!!!!!!!!!!!!!!!!!!!");
     }
+    handler= new Handler();
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
     ActionBar actionBar = getSupportActionBar();
@@ -328,7 +352,6 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     sp = DetectorActivity.this.getSharedPreferences("prefs", Context.MODE_PRIVATE);
     editor = sp.edit();
     counter= sp.getInt("count", 0);
-
     frameToCropTransform =
         ImageUtils.getTransformationMatrix(
             previewWidth, previewHeight,
@@ -439,7 +462,6 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
           public void run() {
             LOGGER.i("Running detection on image " + currTimestamp);
             final long startTime = SystemClock.uptimeMillis();
-            //System.out.println("MEEEEEEEEEEEEdetector: "+detector.toString());
             final List<Classifier.Recognition> results = detector.recognizeImage(croppedBitmap);
             lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
 
@@ -470,17 +492,29 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
               final RectF location = result.getLocation();
               if (location != null && result.getConfidence() >= minimumConfidence ) {
                 if(result.getTitle().isEmpty()){
-                  //System.out.println("@@@@WOW YOUR LOGIC IS SHIT");
-                  //System.out.println("@@@@TITLENOW: "+result.getTitle());
+
+                  counter=0;
                 }
 
                 else {
                   canvas.drawRect(location, paint);
 
                   System.out.println("@@@@TITLE: " + result.getTitle());
+                  counter++;
+                  System.out.print("@@@@COUTNER: "+counter);
                   cropToFrameTransform.mapRect(location);
                   result.setLocation(location);
                   mappedRecognitions.add(result);
+                  if (counter>=1){
+                  handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                      // This is run on the UI thread.
+                      if(automation) {
+                        fab.performClick();
+                      }
+                    }
+                  });}
                 }
               }
             }

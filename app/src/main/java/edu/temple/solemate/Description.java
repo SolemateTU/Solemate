@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,6 +27,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +46,8 @@ public class Description extends Activity {
     ArrayList<String> shoeIDs = new ArrayList<String>();
     ArrayList<String> shoeDescriptions = new ArrayList<String>();
     ArrayList<String> imgStrings = new ArrayList<String>();
+    ArrayList<String> shoePrices = new ArrayList<String>();
+    ArrayList<String> urls = new ArrayList<String>();
 
 
     ////////////////////////
@@ -54,13 +59,18 @@ public class Description extends Activity {
 
     CustomList adapter;
     ListView list;
+    Button priceButton;
+    TextView shoeName;
 
     protected void onCreate (Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.desc);
         t = (TextView) findViewById(R.id.tv);
         i = (ImageView) findViewById(R.id.image);
+        priceButton = (Button) findViewById(R.id.shoePriceButton);
+        shoeName = (TextView) findViewById(R.id.shoeName);
 
+        // initialize recommended shoe arrays
         shoeIDs.add("loading...");
         shoeIDs.add("loading...");
         shoeIDs.add("loading...");
@@ -69,9 +79,23 @@ public class Description extends Activity {
         shoeDescriptions.add("");
         shoeDescriptions.add("");
 
-        imgStrings.add("");
-        imgStrings.add("");
-        imgStrings.add("");
+        shoePrices.add("");
+        shoePrices.add("");
+        shoePrices.add("");
+
+        urls.add("");
+        urls.add("");
+        urls.add("");
+
+
+
+        // get b64 string for stock loading image
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.shoe_place_holder);
+        String bmString = bitmapToBase64(bm);
+
+        imgStrings.add(bmString);
+        imgStrings.add(bmString);
+        imgStrings.add(bmString);
 
         // Instantiate the RequestQueue.
         queue = Volley.newRequestQueue(this);
@@ -81,12 +105,26 @@ public class Description extends Activity {
         String price = getIntent().getStringExtra("price");
         String details = getIntent().getStringExtra("details");
         String img = getIntent().getStringExtra("image");
+        final String url = getIntent().getStringExtra("url");
 
         byte[] decodedString = Base64.decode(img, Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         i.setImageBitmap(decodedByte);
+        shoeName.setText(name);
+        t.setText(details);
 
-        t.setText(name + " " + details + " " + price);
+        priceButton.setText(price);
+        priceButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+            }
+        });
 
         JsonObjectRequest recommendation_request = buildRecommendationRequest();
         System.out.println("+++++++MAKING REC REQUEST++++++++");
@@ -94,7 +132,7 @@ public class Description extends Activity {
 
         // set list click listener
         list = (ListView)findViewById(R.id.list);
-        adapter = new CustomList(Description.this, shoeIDs, shoeDescriptions, imgStrings);
+        adapter = new CustomList(Description.this, shoeIDs, shoePrices, shoeDescriptions, imgStrings);
 
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -107,12 +145,24 @@ public class Description extends Activity {
                 Intent intent= new Intent(Description.this, Description.class);
                 intent.putExtra("name", shoeIDs.get(position));
                 intent.putExtra("details", shoeDescriptions.get(position));
-                intent.putExtra("price", shoeDescriptions.get(position));
+                intent.putExtra("price", shoePrices.get(position));
                 intent.putExtra("image", imgStrings.get(position));
+                intent.putExtra("url", urls.get(position));
+
                 startActivity(intent);
 
             }
         });
+    }
+
+    private String bitmapToBase64(Bitmap myBitmap) {
+        //bitmap to byte array
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        myBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        String imageString = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+        return imageString;
     }
 
 
@@ -134,8 +184,10 @@ public class Description extends Activity {
                         try {
                             System.out.println("+++++++DETAILS RETURNED FOR "+ response.getString("shoeTitle"));
                             shoeIDs.set(index, response.getString("shoeTitle"));
-                            shoeDescriptions.set(index, response.getString("lowestPrice"));
+                            shoeDescriptions.set(index, response.getString("shoeDescription"));
                             imgStrings.set(index, response.getString("shoeImage"));
+                            shoePrices.set(index, response.getString("lowestPrice"));
+                            urls.set(index, response.getString("url"));
                         } catch (JSONException e) {
                             System.out.println("ERROR GETTING DETAILS FOR " + shoeID);
                             e.printStackTrace();
