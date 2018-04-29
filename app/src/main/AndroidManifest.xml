@@ -15,7 +15,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DetectorActivity">
+        <activity android:name=".DetectorActivity"
+            android:screenOrientation = "portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,22 +24,27 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Internal">
+        <activity android:name=".Internal"
+            android:screenOrientation = "portrait">
 
         </activity>
 
-        <activity android:name=".Details">
+        <activity android:name=".Details"
+            android:screenOrientation = "portrait">
 
         </activity>
 
-        <activity android:name=".SavedList">
+        <activity android:name=".SavedList"
+            android:screenOrientation = "portrait">
 
         </activity>
 
-        <activity android:name=".Description">
+        <activity android:name=".Description"
+            android:screenOrientation = "portrait">
 
         </activity>
-        <activity android:name=".PullList">
+        <activity android:name=".PullList"
+            android:screenOrientation = "portrait">
 
         </activity>
     </application>
