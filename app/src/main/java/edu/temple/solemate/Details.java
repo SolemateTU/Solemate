@@ -99,7 +99,7 @@ public class Details extends Activity {
         JSONObject postParams = new JSONObject();
         try {
             postParams.put("img", imageString);
-            postParams.put("userID", "demo_3_test_android1");
+            postParams.put("userID", "fina_test_android1");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -169,6 +169,7 @@ public class Details extends Activity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
                 myBitmap = BitmapFactory.decodeFile((String) getIntent().getExtras().get("picture2"));
                 image.setImageBitmap(myBitmap);
+                image.setRotation(90);
             }
         }
         return myBitmap;
@@ -274,7 +275,7 @@ public class Details extends Activity {
                         System.out.println("++++++++++++REC REQUEST RETURN++++++++++++");
                         try {
                             // save shoe if it has not already been saved
-                            if (!shoeIsSaved(response.getString("shoeTitle"))){
+                            if (!shoeIsSaved(response.getString("shoeTitle"))&&!"No Shoe Found".equals(response.getString("shoeTitle"))){
                                 // write response to phone storage
                                 JSONArray jarray;
                                 if (readFromFile().equals("")) {
